@@ -1,116 +1,59 @@
-const executeQuery = require("../database/querys");
+const knexConfig = require("../database/knexConfig");
 
 class Request {
-  async create(userId, petId) {
-    let sql = `INSERT INTO REQUEST (userId, petId, createdAt, status) VALUES (${userId}, ${petId}, current_timestamp(), 'pending');`;
-    return await executeQuery(sql).then(results => ({
-      reqId: results.insertId,
-      userId,
-      petId,
-      createdAt: Date("YYYY-MM-DD THH:mm:ss"),
-      finishedAt: null,
-      status: "pending"
-    }));
+  knex() {
+    return knexConfig.from("requests");
   }
 
-  async list() {
-    let sql = `SELECT * FROM REQUEST`;
-    return await executeQuery(sql).then(results =>
-      results.map(result => {
-        result.createdAt = Date(result.createdAt);
-        if (result.finishedAt != null)
-          result.finishedAt = Date(result.finishedAt);
-
-        return result;
-      })
-    );
+  list() {
+    return this.knex();
   }
 
-  async listRequestsByUser(userId) {
-    let sql = `SELECT * FROM REQUEST WHERE userId=${userId}`;
-    return await executeQuery(sql).then(results =>
-      results.map(result => {
-        result.createdAt = Date(result.createdAt);
-        if (result.finishedAt != null)
-          result.finishedAt = Date(result.finishedAt);
-
-        return result;
-      })
-    );
+  listRequestsByUser(userId) {
+    return this.knex()
+      .where({ userId })
+      .first();
   }
 
-  async listRequestsByPet(petId) {
-    let sql = `SELECT * FROM REQUEST WHERE petId=${petId}`;
-    return await executeQuery(sql).then(results =>
-      results.map(result => {
-        result.createdAt = Date(result.createdAt);
-        if (result.finishedAt != null)
-          result.finishedAt = Date(result.finishedAt);
-
-        return result;
-      })
-    );
+  listRequestsByPet(petId) {
+    return this.knex()
+      .where({ petId })
+      .first();
   }
 
-  async listRequestsByStatus(status) {
-    let sql = `SELECT * FROM REQUEST WHERE status='${status}'`;
-    return await executeQuery(sql).then(results =>
-      results.map(result => {
-        result.createdAt = Date(result.createdAt);
-        if (result.finishedAt != null)
-          result.finishedAt = Date(result.finishedAt);
-
-        return result;
-      })
-    );
+  listRequestsByStatus(status) {
+    return this.knex().where({ status });
   }
 
-  async getRequestById(reqId) {
-    let sql = `SELECT * FROM REQUEST WHERE reqId=${reqId}`;
-    return await executeQuery(sql).then(results => ({
-      reqId: results[0].reqId,
-      createdAt: Date(results[0].createdAt),
-      finishedAt: results[0] == null ? null : Date(results[0].finishedAt),
-      userId: results[0].userId,
-      petId: results[0].petId,
-      status: results[0].status
-    }));
+  getRequestById(reqId) {
+    return this.knex()
+      .where({ reqId })
+      .first();
   }
 
-  async update(reqId, status) {
-    let sql = `SELECT * FROM REQUEST WHERE reqId=${reqId}`;
-    return await executeQuery(sql).then(async results => {
-      if (results.length == 0) throw Error("Request not found");
+  create(request) {
+    return knex
+      .from(this.table)
+      .insert(request)
+      .returning("*");
+  }
 
-      if (results[0].status == "finished")
-        throw Error("Request finished cannot be change");
-
-      let finishedAt = status == "finished" ? Date() : null;
-
-      sql =
-        status == "finished"
-          ? `UPDATE REQUEST SET status='${status}', finishedAt=current_timestamp() WHERE reqId=${reqId};`
-          : `UPDATE REQUEST SET status='${status}' WHERE reqId=${reqId};`;
-
-      await executeQuery(sql);
-      return {
-        reqId: results[0].reqId,
-        createdAt: Date(results[0].createdAt),
-        finishedAt,
-        userId: results[0].userId,
-        petId: results[0].petId,
-        status
-      };
-    });
+  update({ reqId, status }) {
+    return knex
+      .from(this.table)
+      .where({ reqId })
+      .update(status)
+      .returning("*");
   }
 
   async delete(reqId) {
-    let sql = `SELECT reqId FROM REQUEST WHERE reqId=${reqId}`;
-    let request = await executeQuery(sql);
-    if (request.length == 0) return false;
+    const request = await this.knex().where({ reqId });
+    if (!request) throw new Error("Could not find request");
 
-    sql = `DELETE FROM REQUEST WHERE reqId = ${reqId};`;
-    await executeQuery(sql);
+    await knex
+      .from(this.table)
+      .where({ reqId })
+      .del();
     return true;
   }
 }

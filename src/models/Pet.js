@@ -1,61 +1,49 @@
-const executeQuery = require("../database/querys");
+const knexConfig = require("../database/knexConfig");
 
 class Pet {
-  async create(userId, name, type, breed, age, weight) {
-    let sql = `INSERT INTO PET (userId, name, type, breed, age, weight)
-        VALUES (${userId}, '${name}', '${type}', '${breed}', ${age}, ${weight}); 
-        `;
-
-    return await executeQuery(sql).then(results => ({
-      petId: results.insertId,
-      userId,
-      name,
-      type,
-      breed,
-      age,
-      weight
-    }));
+  knex() {
+    return knexConfig.from("pets");
   }
 
-  async list() {
-    let sql = "SELECT * FROM PET";
-    return await executeQuery(sql);
+  list() {
+    return this.knex();
   }
 
-  async getPetById(petId) {
-    let sql = `SELECT * FROM PET WHERE PET.petId = ${petId}`;
-    return await executeQuery(sql).then(results => results[0]);
+  getPetById(petId) {
+    return this.knex()
+      .where({ petId })
+      .first();
   }
 
-  async getPetsByOwner(userId) {
-    let sql = `SELECT * 
-                   FROM PET
-                   WHERE PET.userId = ${userId}`;
-
-    return await executeQuery(sql);
+  getPetsByOwner(userId) {
+    return this.knex()
+      .where({ userId })
+      .first();
   }
 
-  async update(petId, name, type, breed, age, weight) {
-    let sql = `UPDATE PET SET name='${name}', type='${type}', breed='${breed}', age=${age}, weight=${weight} WHERE petId=${petId};
-           SELECT userId FROM PET WHERE petId=${petId};`;
-    return await executeQuery(sql).then(results => ({
-      petId,
-      userId: results[1][0].userId,
-      name,
-      type,
-      breed,
-      age,
-      weight
-    }));
+  create(pet) {
+    return knex
+      .from(this.table)
+      .insert(pet)
+      .returning("*");
+  }
+
+  update({ petId, ...pet }) {
+    return knex
+      .from(this.table)
+      .where({ petId })
+      .update(pet)
+      .returning("*");
   }
 
   async delete(petId) {
-    let sql = `SELECT petId FROM PET WHERE petId = ${petId}`;
-    let pet = await executeQuery(sql);
-    if (pet.length == 0) return false;
+    const pet = await this.knex().where({ petId });
+    if (!pet) throw new Error("Could not find pet");
 
-    sql = `DELETE FROM PET WHERE petId = ${petId};`;
-    await executeQuery(sql);
+    await knex
+      .from(this.table)
+      .where({ petId })
+      .del();
     return true;
   }
 }

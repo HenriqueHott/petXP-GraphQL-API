@@ -9,6 +9,7 @@ module.exports = gql`
     taxRegistry: String!
     address: String
     createdAt: String!
+    updatedAt: String!
     pets: [Pet!]!
     requests: [Request!]!
   }
@@ -37,19 +38,20 @@ module.exports = gql`
   }
 
   type Query {
-    status: String!
     # User Querys
     listUsers: [User!]!
     getUserById(userId: Int!): User!
+
     # Pet Querys
     listPets: [Pet!]!
     getPetById(petId: Int!): Pet!
+
     # Request Querys
     listRequests: [Request!]!
     listRequestsByUser(userId: Int!): [Request!]!
     listRequestsByPet(petId: Int!): [Request!]!
     listRequestsByStatus(status: String!): [Request!]!
-    getRequestByid(reqId: Int!): Request!
+    getRequestById(reqId: Int!): Request!
   }
 
   type Mutation {
@@ -69,6 +71,7 @@ module.exports = gql`
       address: String
     ): User!
     deleteUser(userId: Int!): Boolean!
+
     # Pet Mutations
     createPet(
       userId: Int!
@@ -87,6 +90,7 @@ module.exports = gql`
       weight: Float
     ): Pet!
     deletePet(petId: Int!): Boolean!
+
     # Request Mutations
     createRequest(userId: Int!, petId: Int!): Request!
     updateRequest(reqId: Int!, status: String!): Request! # change only the status of a request

@@ -1,52 +1,44 @@
-const executeQuery = require("../database/querys");
+const knexConfig = require("../database/knexConfig");
 
 class User {
-  async create(name, surname, email, taxRegistry, address = null) {
-    let sql = `INSERT INTO USER (name, surname, email, taxreg , address)
-    VALUES ('${name}', '${surname}', '${email}', '${taxRegistry}', '${address}'); `;
-
-    return await executeQuery(sql).then(results => ({
-      userId: results.insertId,
-      name,
-      surname,
-      email,
-      taxRegistry,
-      address
-    }));
+  knex() {
+    return knexConfig.from("users");
   }
 
-  async list() {
-    let sql = `SELECT *, taxreg as taxRegistry FROM USER`;
-    return await executeQuery(sql);
+  list() {
+    return this.knex();
   }
 
-  async getUserById(userId) {
-    let sql = `SELECT *, taxreg as taxRegistry FROM USER WHERE userId = ${userId}`;
-    return await executeQuery(sql).then(result => result[0]);
+  getUserById(userId) {
+    return this.knex()
+      .where({ userId })
+      .first();
   }
 
-  async update(userId, name, surname, email, address = null) {
-    let sql = `UPDATE USER
-    SET name='${name}', surname='${surname}', email='${email}', address='${address}'
-    WHERE USER.userId = ${userId}; 
-    SELECT taxreg FROM USER WHERE userId = ${userId};`;
-    return await executeQuery(sql).then(results => ({
-      userId,
-      name,
-      surname,
-      email,
-      taxRegistry: results[1][0].taxreg,
-      address
-    }));
+  async create(user) {
+    await this.knex().insert(user);
+
+    return this.knex()
+      .orderBy("userId", "desc")
+      .limit(1)
+      .first();
+  }
+
+  async update({ userId, ...user }) {
+    await this.knex()
+      .where({ userId })
+      .update(user);
+
+    return this.getUserById(userId);
   }
 
   async delete(userId) {
-    let sql = `SELECT userId FROM USER WHERE userId = ${userId}`;
-    let user = await executeQuery(sql);
-    if (user.length == 0) return false;
+    const user = await this.getUserById(userId);
+    if (!user) throw new Error("Could not find user");
 
-    sql = `DELETE FROM USER WHERE USER.userId = ${userId};`;
-    await executeQuery(sql);
+    await this.knex()
+      .where({ userId })
+      .del();
     return true;
   }
 }

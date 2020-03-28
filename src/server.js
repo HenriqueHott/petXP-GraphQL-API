@@ -1,17 +1,10 @@
+require("dotenv").config();
 const customExpress = require("./configuration/customExpress");
-const connection = require("./database/connection");
-const createTables = require("./database/createTables");
 
-connection.connect(err => {
-  if (err) {
-    console.log("Error to comunicate with database:" + err.stack);
-    return;
-  }
-  console.log("Connected in the database");
-  createTables(); // remove this line to remove auto create
-});
+const app = customExpress();
 
-app = customExpress();
-app.listen(4000, () => {
-  console.log("Server Running on port 4000");
+const PORT = 4000;
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
