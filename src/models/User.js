@@ -1,4 +1,5 @@
 const knexConfig = require("../database/knexConfig");
+const argon = require("argon2");
 
 class User {
   knex() {
@@ -9,19 +10,27 @@ class User {
     return this.knex();
   }
 
-  getUserById(userId) {
-    return this.knex()
+  async getUserById(userId) {
+    const user = await this.knex()
       .where({ userId })
       .first();
+
+    return user;
   }
 
   async create(user) {
+    user.password = await argon.hash(user.password);
+
     await this.knex().insert(user);
 
-    return this.knex()
+    const newUser = await this.knex()
       .orderBy("userId", "desc")
       .limit(1)
       .first();
+
+    Object.assign(newUser, { pets: [], requests: [] });
+
+    return newUser;
   }
 
   async update({ userId, ...user }) {

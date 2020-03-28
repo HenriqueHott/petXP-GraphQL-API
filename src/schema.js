@@ -4,8 +4,8 @@ module.exports = gql`
   type User {
     userId: Int!
     name: String!
-    surname: String!
     email: String!
+    surname: String!
     taxRegistry: String!
     address: String
     createdAt: String!
@@ -40,18 +40,16 @@ module.exports = gql`
   type Query {
     # User Querys
     listUsers: [User!]!
-    getUserById(userId: Int!): User!
+    getUserById(userId: Int!): User
 
     # Pet Querys
     listPets: [Pet!]!
-    getPetById(petId: Int!): Pet!
+    getPetById(petId: Int!): Pet
 
     # Request Querys
     listRequests: [Request!]!
-    listRequestsByUser(userId: Int!): [Request!]!
-    listRequestsByPet(petId: Int!): [Request!]!
     listRequestsByStatus(status: String!): [Request!]!
-    getRequestById(reqId: Int!): Request!
+    getRequestById(reqId: Int!): Request
   }
 
   type Mutation {
@@ -60,6 +58,7 @@ module.exports = gql`
       name: String!
       surname: String!
       email: String!
+      password: String!
       taxRegistry: String!
       address: String
     ): User!
