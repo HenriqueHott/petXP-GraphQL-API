@@ -9,10 +9,13 @@ class Pet {
     return this.knex().orderBy("petId", "asc");
   }
 
-  getPetById(petId) {
-    return this.knex()
+  async getPetById(petId) {
+    const pet = await this.knex()
       .where({ petId })
       .first();
+    if (!pet) throw new Error("Could not find pet");
+
+    return pet;
   }
 
   async create(pet) {
@@ -33,8 +36,7 @@ class Pet {
   }
 
   async delete(petId) {
-    const pet = await this.getPetById(petId);
-    if (!pet) throw new Error("Could not find pet");
+    await this.getPetById(petId);
 
     await this.knex()
       .where({ petId })

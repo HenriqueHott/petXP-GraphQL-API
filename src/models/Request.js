@@ -15,10 +15,13 @@ class Request {
       .orderBy("reqId", "asc");
   }
 
-  getRequestById(reqId) {
-    return this.knex()
+  async getRequestById(reqId) {
+    const request = await this.knex()
       .where({ reqId })
       .first();
+    if (!request) throw new Error("Could not find request");
+
+    return request;
   }
 
   async create(request) {
@@ -42,8 +45,7 @@ class Request {
   }
 
   async delete(reqId) {
-    const request = await this.getRequestById(reqId);
-    if (!request) throw new Error("Could not find request");
+    await this.getRequestById(reqId);
 
     await this.knex()
       .where({ reqId })

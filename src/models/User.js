@@ -14,6 +14,7 @@ class User {
     const user = await this.knex()
       .where({ userId })
       .first();
+    if (!user) throw new Error("Could not find user");
 
     return user;
   }
@@ -42,8 +43,7 @@ class User {
   }
 
   async delete(userId) {
-    const user = await this.getUserById(userId);
-    if (!user) throw new Error("Could not find user");
+    await this.getUserById(userId);
 
     await this.knex()
       .where({ userId })
