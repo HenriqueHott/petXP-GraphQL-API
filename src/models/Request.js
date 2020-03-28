@@ -6,23 +6,13 @@ class Request {
   }
 
   list() {
-    return this.knex();
-  }
-
-  listRequestsByUser(userId) {
-    return this.knex()
-      .where({ userId })
-      .first();
-  }
-
-  listRequestsByPet(petId) {
-    return this.knex()
-      .where({ petId })
-      .first();
+    return this.knex().orderBy("reqId", "asc");
   }
 
   listRequestsByStatus(status) {
-    return this.knex().where({ status });
+    return this.knex()
+      .where({ status })
+      .orderBy("reqId", "asc");
   }
 
   getRequestById(reqId) {
@@ -31,27 +21,31 @@ class Request {
       .first();
   }
 
-  create(request) {
-    return knex
-      .from(this.table)
-      .insert(request)
-      .returning("*");
+  async create(request) {
+    await this.knex().insert(request);
+
+    return this.knex()
+      .orderBy("reqId", "desc")
+      .limit(1)
+      .first();
   }
 
-  update({ reqId, status }) {
-    return knex
-      .from(this.table)
+  async update({ reqId, status }) {
+    const toUpdate = { status };
+    if (status === "COMPLETED") toUpdate.completedAt = knexConfig.fn.now();
+
+    await this.knex()
       .where({ reqId })
-      .update(status)
-      .returning("*");
+      .update(toUpdate);
+
+    return this.getRequestById(reqId);
   }
 
   async delete(reqId) {
-    const request = await this.knex().where({ reqId });
+    const request = await this.getRequestById(reqId);
     if (!request) throw new Error("Could not find request");
 
-    await knex
-      .from(this.table)
+    await this.knex()
       .where({ reqId })
       .del();
     return true;

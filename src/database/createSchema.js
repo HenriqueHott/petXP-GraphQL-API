@@ -32,13 +32,15 @@ const knex = require("./knexConfig");
       ) ENGINE=InnoDB DEFAULT CHARSET = UTF8MB4;
 
       CREATE TABLE IF NOT EXISTS requests (
-        reqId int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        reqId int AUTO_INCREMENT NOT NULL,
         userId int NOT NULL,
         petId int NOT NULL,
-        status varchar(256) NOT NULL,
+        status ENUM("PENDING", "CANCELED", "COMPLETED") NOT NULL DEFAULT "PENDING",
         createdAt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updatedAt datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         completedAt datetime,
+        PRIMARY KEY (userId, petId),
+        KEY reqId (reqId),
         CONSTRAINT FK_requests_userId FOREIGN KEY (userId) REFERENCES users (userId) ON DELETE CASCADE,
         CONSTRAINT FK_requests_petId FOREIGN KEY (petId) REFERENCES pets (petId) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET = UTF8MB4;

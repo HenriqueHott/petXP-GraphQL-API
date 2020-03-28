@@ -7,7 +7,7 @@ class User {
   }
 
   list() {
-    return this.knex();
+    return this.knex().orderBy("userId", "asc");
   }
 
   async getUserById(userId) {

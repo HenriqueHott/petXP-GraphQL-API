@@ -53,5 +53,8 @@ module.exports = {
     deleteRequest: async (parent, args) => {
       return await requestResolvers.deleteRequest(args.reqId);
     }
-  }
+  },
+
+  // DateTime scalar resolver
+  DateTime: require("graphql-type-datetime")
 };

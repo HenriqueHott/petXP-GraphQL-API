@@ -1,6 +1,14 @@
 const { gql } = require("apollo-server-express");
 
 module.exports = gql`
+  scalar DateTime
+
+  enum RequestStatus {
+    PENDING
+    CANCELED
+    COMPLETED
+  }
+
   type User {
     userId: Int!
     name: String!
@@ -8,8 +16,8 @@ module.exports = gql`
     surname: String!
     taxRegistry: String!
     address: String
-    createdAt: String!
-    updatedAt: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
     pets: [Pet!]!
     requests: [Request!]!
   }
@@ -22,17 +30,20 @@ module.exports = gql`
     breed: String!
     age: Int!
     weight: Float
+    createdAt: DateTime!
+    updatedAt: DateTime!
     owner: User!
     requests: [Request!]!
   }
 
   type Request {
-    reqId: ID!
+    reqId: Int!
     userId: Int!
     petId: Int!
-    status: String!
-    createdAt: String!
-    finishedAt: String
+    status: RequestStatus!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    completedAt: DateTime
     user: User!
     pet: Pet!
   }
@@ -40,16 +51,16 @@ module.exports = gql`
   type Query {
     # User Querys
     listUsers: [User!]!
-    getUserById(userId: Int!): User
+    getUserById(userId: Int!): User!
 
     # Pet Querys
     listPets: [Pet!]!
-    getPetById(petId: Int!): Pet
+    getPetById(petId: Int!): Pet!
 
     # Request Querys
     listRequests: [Request!]!
-    listRequestsByStatus(status: String!): [Request!]!
-    getRequestById(reqId: Int!): Request
+    listRequestsByStatus(status: RequestStatus!): [Request!]!
+    getRequestById(reqId: Int!): Request!
   }
 
   type Mutation {
@@ -92,7 +103,7 @@ module.exports = gql`
 
     # Request Mutations
     createRequest(userId: Int!, petId: Int!): Request!
-    updateRequest(reqId: Int!, status: String!): Request! # change only the status of a request
+    updateRequest(reqId: Int!, status: RequestStatus!): Request! # change only the status of a request
     deleteRequest(reqId: Int!): Boolean!
   }
 `;

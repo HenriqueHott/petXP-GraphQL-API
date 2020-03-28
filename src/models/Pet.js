@@ -6,7 +6,7 @@ class Pet {
   }
 
   list() {
-    return this.knex();
+    return this.knex().orderBy("petId", "asc");
   }
 
   getPetById(petId) {
@@ -15,33 +15,28 @@ class Pet {
       .first();
   }
 
-  getPetsByOwner(userId) {
+  async create(pet) {
+    await this.knex().insert(pet);
+
     return this.knex()
-      .where({ userId })
+      .orderBy("petId", "desc")
+      .limit(1)
       .first();
   }
 
-  create(pet) {
-    return knex
-      .from(this.table)
-      .insert(pet)
-      .returning("*");
-  }
-
-  update({ petId, ...pet }) {
-    return knex
-      .from(this.table)
+  async update({ petId, ...pet }) {
+    await this.knex()
       .where({ petId })
-      .update(pet)
-      .returning("*");
+      .update(pet);
+
+    return this.getPetById(petId);
   }
 
   async delete(petId) {
-    const pet = await this.knex().where({ petId });
+    const pet = await this.getPetById(petId);
     if (!pet) throw new Error("Could not find pet");
 
-    await knex
-      .from(this.table)
+    await this.knex()
       .where({ petId })
       .del();
     return true;
