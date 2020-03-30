@@ -9,10 +9,17 @@ class Pet {
     return this.knex().orderBy("petId", "asc");
   }
 
+  listByOwner(userId) {
+    return this.knex()
+      .where({ userId })
+      .orderBy("petId", "asc");
+  }
+
   async getPetById(petId) {
     const pet = await this.knex()
       .where({ petId })
       .first();
+
     if (!pet) throw new Error("Could not find pet");
 
     return pet;

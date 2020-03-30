@@ -27,7 +27,7 @@ module.exports = {
     // Requests Querys
     listRequests: async () => await requestResolvers.listRequests(),
     listRequestsByStatus: async (parent, { status }) => {
-      return await requestResolvers.listRequestsByStatus(status);
+      return await requestResolvers.listRequestsWhere({ status });
     },
     getRequestById: async (parent, { reqId }) => {
       return await requestResolvers.getRequestById(reqId);
@@ -80,5 +80,27 @@ module.exports = {
   },
 
   // DateTime scalar resolver
-  DateTime: require("graphql-type-datetime")
+  DateTime: require("graphql-type-datetime"),
+
+  // User field resolvers
+  User: {
+    pets: async ({ userId }) => await petResolvers.listPetsByOwner(userId),
+    requests: async ({ userId }) => {
+      return await requestResolvers.listRequestsWhere({ userId });
+    }
+  },
+
+  // Pet field resolvers
+  Pet: {
+    owner: async ({ userId }) => await userResolvers.getUserById(userId),
+    requests: async ({ petId }) => {
+      return await requestResolvers.listRequestsWhere({ petId });
+    }
+  },
+
+  // Request field resolvers
+  Request: {
+    user: async ({ userId }) => await userResolvers.getUserById(userId),
+    pet: async ({ petId }) => await petResolvers.getPetById(petId)
+  }
 };

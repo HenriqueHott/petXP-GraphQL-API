@@ -1,12 +1,11 @@
 const modelFactory = require("../models/modelFactory");
-
-let Pets = modelFactory("pet");
+const Pets = modelFactory("pet");
 
 module.exports = {
-  createPet: pet => Pets.create(pet),
   listPets: () => Pets.list(),
+  listPetsByOwner: userId => Pets.listByOwner(userId),
   getPetById: petId => Pets.getPetById(petId),
-  getPetsByOwner: userId => Pets.getPetsByOwner(userId),
+  createPet: pet => Pets.create(pet),
   updatePet: pet => Pets.update(pet),
   deletePet: petId => Pets.delete(petId)
 };

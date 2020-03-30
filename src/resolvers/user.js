@@ -1,5 +1,5 @@
 const modelFactory = require("../models/modelFactory");
-let Users = modelFactory("user");
+const Users = modelFactory("user");
 
 module.exports = {
   listUsers: () => Users.list(),

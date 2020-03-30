@@ -14,6 +14,7 @@ class User {
     const user = await this.knex()
       .where({ userId })
       .first();
+
     if (!user) throw new Error("Could not find user");
 
     return user;

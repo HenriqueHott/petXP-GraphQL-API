@@ -9,9 +9,9 @@ class Request {
     return this.knex().orderBy("reqId", "asc");
   }
 
-  listRequestsByStatus(status) {
+  listWhere(where) {
     return this.knex()
-      .where({ status })
+      .where(where)
       .orderBy("reqId", "asc");
   }
 
@@ -19,6 +19,7 @@ class Request {
     const request = await this.knex()
       .where({ reqId })
       .first();
+
     if (!request) throw new Error("Could not find request");
 
     return request;

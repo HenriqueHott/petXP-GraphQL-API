@@ -1,11 +1,11 @@
 const modelFactory = require("../models/modelFactory");
-let Requests = modelFactory("request");
+const Requests = modelFactory("request");
 
 module.exports = {
-  createRequest: request => Requests.create(request),
   listRequests: () => Requests.list(),
-  listRequestsByStatus: status => Requests.listRequestsByStatus(status),
+  listRequestsWhere: where => Requests.listWhere(where),
   getRequestById: reqId => Requests.getRequestById(reqId),
+  createRequest: request => Requests.create(request),
   updateRequest: request => Requests.update(request),
   deleteRequest: reqId => Requests.delete(reqId)
 };
