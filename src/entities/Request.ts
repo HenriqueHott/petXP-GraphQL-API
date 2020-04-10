@@ -1,0 +1,61 @@
+import { ObjectType, Field, ID } from "type-graphql";
+import {
+  Entity,
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  PrimaryColumn,
+  Generated,
+  ManyToOne
+} from "typeorm";
+import { User } from "./User";
+import { Pet } from "./Pet";
+
+export enum RequestStatus {
+  PENDING = "PENDING",
+  CANCELED = "CANCELED",
+  COMPLETED = "COMPLETED"
+}
+
+@ObjectType()
+@Entity("requests")
+export class Request extends BaseEntity {
+  @Field(() => ID)
+  @Column("int", { unique: true })
+  @Generated("increment")
+  readonly id: string;
+
+  @Field()
+  @PrimaryColumn()
+  readonly userId: string;
+
+  @Field()
+  @PrimaryColumn()
+  readonly petId: string;
+
+  @Field()
+  @Column({
+    type: "enum",
+    enum: RequestStatus,
+    default: RequestStatus.PENDING
+  })
+  status: RequestStatus;
+
+  @Field()
+  @CreateDateColumn()
+  readonly createdAt: Date;
+
+  @Field()
+  @UpdateDateColumn()
+  readonly updateAt: Date;
+
+  @Field(() => User)
+  @OneToMany(() => User, user => user.requests, { onDelete: "CASCADE" })
+  user: User;
+
+  @Field(() => Pet)
+  @ManyToOne(() => Pet, pet => pet.requests, { onDelete: "CASCADE" })
+  pet: Pet;
+}
