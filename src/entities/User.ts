@@ -49,7 +49,7 @@ export class User extends BaseEntity {
 
   @Field()
   @UpdateDateColumn()
-  readonly updateAt: Date;
+  readonly updatedAt: Date;
 
   @Field(() => [Pet])
   @OneToMany(() => Pet, pet => pet.owner)

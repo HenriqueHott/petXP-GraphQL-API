@@ -48,7 +48,7 @@ export class Request extends BaseEntity {
 
   @Field()
   @UpdateDateColumn()
-  readonly updateAt: Date;
+  readonly updatedAt: Date;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.requests, { onDelete: "CASCADE" })
