@@ -14,7 +14,7 @@ import { Pet } from "./Pet";
 import { Request } from "./Request";
 
 @ObjectType()
-@Entity("users")
+@Entity("users", { orderBy: { id: "ASC" } })
 export class User extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn()
@@ -52,11 +52,11 @@ export class User extends BaseEntity {
   readonly updateAt: Date;
 
   @Field(() => [Pet])
-  @OneToMany(() => Pet, pet => pet.ownerId)
+  @OneToMany(() => Pet, pet => pet.owner)
   pets: Pet[];
 
   @Field(() => [Request])
-  @OneToMany(() => Request, request => request.userId)
+  @OneToMany(() => Request, request => request.user)
   requests: Request[];
 
   @BeforeInsert()

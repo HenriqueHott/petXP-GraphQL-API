@@ -13,15 +13,11 @@ import { User } from "./User";
 import { Request } from "./Request";
 
 @ObjectType()
-@Entity("pets")
+@Entity("pets", { orderBy: { id: "ASC" } })
 export class Pet extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn()
   readonly id: string;
-
-  @Field()
-  @Column()
-  readonly ownerId: string;
 
   @Field()
   @Column()
@@ -56,6 +52,6 @@ export class Pet extends BaseEntity {
   owner: User;
 
   @Field(() => [Request])
-  @OneToMany(() => Request, request => request.petId)
+  @OneToMany(() => Request, request => request.pet)
   requests: Request[];
 }

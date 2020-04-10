@@ -4,11 +4,13 @@ import { CreateUserArgs } from "../types/User/CreateUserArgs";
 import { UpdateUserArgs } from "../types/User/UpdateUserArgs";
 import { validateOrReject } from "class-validator";
 
+const relations = ["pets", "requests"];
+
 @Resolver(User)
 export class UserResolver {
   @Query(() => [User])
   async users(): Promise<User[]> {
-    return await User.find();
+    return await User.find({ relations });
   }
 
   @Mutation(() => User)
@@ -22,7 +24,7 @@ export class UserResolver {
   async updateUser(@Args() { id, ...args }: UpdateUserArgs): Promise<User> {
     await validateOrReject(args);
 
-    const user = await User.findOne({ where: { id } });
+    const user = await User.findOne({ where: { id }, relations });
     if (!user) throw new Error("Could not find user");
 
     Object.assign(user, args);

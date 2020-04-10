@@ -5,7 +5,6 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   PrimaryColumn,
   Generated,
   ManyToOne
@@ -20,7 +19,7 @@ export enum RequestStatus {
 }
 
 @ObjectType()
-@Entity("requests")
+@Entity("requests", { orderBy: { id: "ASC" } })
 export class Request extends BaseEntity {
   @Field(() => ID)
   @Column("int", { unique: true })
@@ -52,7 +51,7 @@ export class Request extends BaseEntity {
   readonly updateAt: Date;
 
   @Field(() => User)
-  @OneToMany(() => User, user => user.requests, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, user => user.requests, { onDelete: "CASCADE" })
   user: User;
 
   @Field(() => Pet)
