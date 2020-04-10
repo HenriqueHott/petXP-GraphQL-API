@@ -47,9 +47,9 @@ export class Pet extends BaseEntity {
   @UpdateDateColumn()
   readonly updatedAt: Date;
 
-  @Field(() => User)
+  @Field(() => User, { nullable: true })
   @ManyToOne(() => User, user => user.pets, { onDelete: "CASCADE" })
-  owner: User;
+  owner: User | null;
 
   @Field(() => [Request])
   @OneToMany(() => Request, request => request.pet)

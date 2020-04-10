@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID } from "type-graphql";
+import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
 import {
   Entity,
   BaseEntity,
@@ -17,6 +17,11 @@ export enum RequestStatus {
   CANCELED = "CANCELED",
   COMPLETED = "COMPLETED"
 }
+
+registerEnumType(RequestStatus, {
+  name: "RequestStatus",
+  description: "Request status options"
+});
 
 @ObjectType()
 @Entity("requests", { orderBy: { id: "ASC" } })
@@ -49,6 +54,10 @@ export class Request extends BaseEntity {
   @Field()
   @UpdateDateColumn()
   readonly updatedAt: Date;
+
+  @Field(() => Date, { nullable: true })
+  @Column("datetime", { nullable: true })
+  completedAt: Date | null;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.requests, { onDelete: "CASCADE" })
