@@ -17,7 +17,10 @@ export class UserResolver {
   async createUser(@Args() args: CreateUserArgs): Promise<User> {
     await validateOrReject(args);
 
-    return await User.create(args).save();
+    const user = await User.create(args).save();
+    Object.assign(user, { pets: [], requests: [] });
+
+    return user;
   }
 
   @Mutation(() => User)

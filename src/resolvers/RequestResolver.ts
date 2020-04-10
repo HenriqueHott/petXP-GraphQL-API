@@ -3,6 +3,8 @@ import { Request, RequestStatus } from "../entities/Request";
 import { validateOrReject } from "class-validator";
 import { CreateRequestArgs } from "../types/Request/CreateRequestArgs";
 import { UpdateRequestArgs } from "../types/Request/UpdateRequestArgs";
+import { User } from "../entities/User";
+import { Pet } from "../entities/Pet";
 
 const relations: string[] = ["user", "pet"];
 
@@ -17,7 +19,15 @@ export class RequestResolver {
   async createRequest(@Args() args: CreateRequestArgs): Promise<Request> {
     await validateOrReject(args);
 
-    return await Request.create(args).save();
+    const request = Request.create(args);
+    const [user, pet] = await Promise.all([
+      User.findOne({ where: { id: request.userId } }),
+      Pet.findOne({ where: { id: request.petId } }),
+      request.save()
+    ]);
+
+    Object.assign(request, { user, pet });
+    return request;
   }
 
   @Mutation(() => Request)

@@ -17,7 +17,10 @@ export class PetResolver {
   async createPet(@Args() args: CreatePetArgs): Promise<Pet> {
     await validateOrReject(args);
 
-    return await Pet.create(args).save();
+    const pet = await Pet.create(args).save();
+    Object.assign(pet, { user: null, requests: [] });
+
+    return pet;
   }
 
   @Mutation(() => Pet)
