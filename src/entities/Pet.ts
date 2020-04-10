@@ -19,6 +19,9 @@ export class Pet extends BaseEntity {
   @PrimaryGeneratedColumn()
   readonly id: string;
 
+  @Column("int", { nullable: true })
+  ownerId: string | null;
+
   @Field()
   @Column()
   name: string;

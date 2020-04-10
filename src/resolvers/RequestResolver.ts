@@ -41,6 +41,8 @@ export class RequestResolver {
 
     if (args.status === RequestStatus.COMPLETED) {
       request.completedAt = new Date();
+
+      await Pet.update({ id: request.petId }, { ownerId: request.userId });
     }
 
     Object.assign(request, args);
