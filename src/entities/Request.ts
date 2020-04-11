@@ -12,13 +12,18 @@ import {
 import { User } from "./User";
 import { Pet } from "./Pet";
 
-export enum RequestStatus {
+export enum RequestStatusInput {
+  CANCELED = "CANCELED",
+  COMPLETED = "COMPLETED"
+}
+
+enum RequestStatus {
   PENDING = "PENDING",
   CANCELED = "CANCELED",
   COMPLETED = "COMPLETED"
 }
 
-registerEnumType(RequestStatus, {
+registerEnumType(RequestStatusInput, {
   name: "RequestStatus",
   description: "Request status options"
 });

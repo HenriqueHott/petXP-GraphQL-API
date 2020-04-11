@@ -1,5 +1,5 @@
 import { Resolver, Query, Mutation, Args, Arg, ID } from "type-graphql";
-import { Request, RequestStatus } from "../entities/Request";
+import { Request, RequestStatusInput } from "../entities/Request";
 import { validateOrReject } from "class-validator";
 import { CreateRequestArgs } from "../types/Request/CreateRequestArgs";
 import { UpdateRequestArgs } from "../types/Request/UpdateRequestArgs";
@@ -32,26 +32,22 @@ export class RequestResolver {
 
   @Mutation(() => Request)
   async updateRequest(
-    @Args() { id, ...args }: UpdateRequestArgs
+    @Args() { id, status }: UpdateRequestArgs
   ): Promise<Request> {
-    await validateOrReject({ id, ...args });
+    await validateOrReject({ id, status });
 
     const request = await Request.findOne({ where: { id }, relations });
     if (!request) throw new Error("Could not find request");
 
     if (request.locked) throw new Error("Request has been locked already");
 
-    if (args.status === RequestStatus.COMPLETED) {
+    if (status === RequestStatusInput.COMPLETED) {
       request.completedAt = new Date();
 
       await Pet.update({ id: request.petId }, { ownerId: request.userId });
     }
 
-    if (args.status !== RequestStatus.PENDING) {
-      request.locked = true;
-    }
-
-    Object.assign(request, args);
+    Object.assign(request, { status, locked: true });
     return await request.save();
   }
 
