@@ -59,6 +59,9 @@ export class Request extends BaseEntity {
   @Column("datetime", { nullable: true })
   completedAt: Date | null;
 
+  @Column({ default: false })
+  locked: boolean;
+
   @Field(() => User)
   @ManyToOne(() => User, user => user.requests, { onDelete: "CASCADE" })
   user: User;

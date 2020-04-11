@@ -39,10 +39,16 @@ export class RequestResolver {
     const request = await Request.findOne({ where: { id }, relations });
     if (!request) throw new Error("Could not find request");
 
+    if (request.locked) throw new Error("Request has been locked already");
+
     if (args.status === RequestStatus.COMPLETED) {
       request.completedAt = new Date();
 
       await Pet.update({ id: request.petId }, { ownerId: request.userId });
+    }
+
+    if (args.status !== RequestStatus.PENDING) {
+      request.locked = true;
     }
 
     Object.assign(request, args);
