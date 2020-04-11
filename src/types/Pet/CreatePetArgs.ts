@@ -34,5 +34,5 @@ export class CreatePetArgs {
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  weight: number | null;
+  weight?: number | null;
 }

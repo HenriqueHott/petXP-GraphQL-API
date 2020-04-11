@@ -22,5 +22,5 @@ export class UserArgs {
   @IsOptional()
   @IsString()
   @Length(1, 255)
-  address: string | null;
+  address?: string | null;
 }
