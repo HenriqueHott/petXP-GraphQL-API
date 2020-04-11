@@ -39,7 +39,7 @@ export class RequestResolver {
     const request = await Request.findOne({ where: { id }, relations });
     if (!request) throw new Error("Could not find request");
 
-    if (request.locked) throw new Error("Request has been locked already");
+    if (request.locked) throw new Error("Request is already done");
 
     if (status === RequestStatusInput.COMPLETED) {
       request.completedAt = new Date();

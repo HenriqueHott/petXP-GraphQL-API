@@ -9,7 +9,7 @@ import {
   BeforeInsert,
   OneToMany
 } from "typeorm";
-import argon from "argon2";
+import { hash } from "argon2";
 import { Pet } from "./Pet";
 import { Request } from "./Request";
 
@@ -28,7 +28,7 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Field()
@@ -61,6 +61,6 @@ export class User extends BaseEntity {
 
   @BeforeInsert()
   async hashPasswordBeforeInsert() {
-    this.password = await argon.hash(this.password);
+    this.password = await hash(this.password);
   }
 }
