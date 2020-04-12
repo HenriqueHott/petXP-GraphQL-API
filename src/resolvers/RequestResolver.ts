@@ -1,6 +1,5 @@
 import { Resolver, Query, Mutation, Args, Arg, ID } from "type-graphql";
 import { Request, RequestStatusInput } from "../entities/Request";
-import { validateOrReject } from "class-validator";
 import { CreateRequestArgs } from "../types/Request/CreateRequestArgs";
 import { UpdateRequestArgs } from "../types/Request/UpdateRequestArgs";
 import { User } from "../entities/User";
@@ -17,8 +16,6 @@ export class RequestResolver {
 
   @Mutation(() => Request)
   async createRequest(@Args() args: CreateRequestArgs): Promise<Request> {
-    await validateOrReject(args);
-
     const request = Request.create(args);
     const [user, pet] = await Promise.all([
       User.findOne({ where: { id: request.userId } }),
@@ -34,8 +31,6 @@ export class RequestResolver {
   async updateRequest(
     @Args() { id, status }: UpdateRequestArgs
   ): Promise<Request> {
-    await validateOrReject({ id, status });
-
     const request = await Request.findOne({ where: { id }, relations });
     if (!request) throw new Error("Could not find request");
 

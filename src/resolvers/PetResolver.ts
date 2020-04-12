@@ -1,6 +1,5 @@
 import { Resolver, Query, Mutation, Args, Arg, ID } from "type-graphql";
 import { Pet } from "../entities/Pet";
-import { validateOrReject } from "class-validator";
 import { CreatePetArgs } from "../types/Pet/CreatePetArgs";
 import { UpdatePetArgs } from "../types/Pet/UpdatePetArgs";
 
@@ -15,8 +14,6 @@ export class PetResolver {
 
   @Mutation(() => Pet)
   async createPet(@Args() args: CreatePetArgs): Promise<Pet> {
-    await validateOrReject(args);
-
     const pet = await Pet.create(args).save();
     Object.assign(pet, { user: null, requests: [] });
 
@@ -25,8 +22,6 @@ export class PetResolver {
 
   @Mutation(() => Pet)
   async updatePet(@Args() { id, ...args }: UpdatePetArgs): Promise<Pet> {
-    await validateOrReject({ id, ...args });
-
     const pet = await Pet.findOne({ where: { id }, relations });
     if (!pet) throw new Error("Could not find pet");
 

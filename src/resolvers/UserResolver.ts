@@ -2,7 +2,6 @@ import { Resolver, Query, Mutation, Args, Arg, ID } from "type-graphql";
 import { User } from "../entities/User";
 import { CreateUserArgs } from "../types/User/CreateUserArgs";
 import { UpdateUserArgs } from "../types/User/UpdateUserArgs";
-import { validateOrReject } from "class-validator";
 
 const relations: string[] = ["pets", "requests"];
 
@@ -15,8 +14,6 @@ export class UserResolver {
 
   @Mutation(() => User)
   async createUser(@Args() args: CreateUserArgs): Promise<User> {
-    await validateOrReject(args);
-
     const user = await User.create(args).save();
     Object.assign(user, { pets: [], requests: [] });
 
@@ -25,8 +22,6 @@ export class UserResolver {
 
   @Mutation(() => User)
   async updateUser(@Args() { id, ...args }: UpdateUserArgs): Promise<User> {
-    await validateOrReject({ id, ...args });
-
     const user = await User.findOne({ where: { id }, relations });
     if (!user) throw new Error("Could not find user");
 
