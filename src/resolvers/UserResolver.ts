@@ -26,7 +26,9 @@ export class UserResolver {
     if (!user) throw new Error("Could not find user");
 
     Object.assign(user, args);
-    return await user.save();
+    await User.update({ id: user.id }, args);
+
+    return user;
   }
 
   @Mutation(() => Boolean)

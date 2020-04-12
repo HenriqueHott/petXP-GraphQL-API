@@ -1,6 +1,16 @@
-import { ArgsType, Field, ID } from "type-graphql";
+import { ArgsType, Field, ID, registerEnumType } from "type-graphql";
 import { IsString, Length, IsEnum } from "class-validator";
-import { RequestStatusInput } from "../../entities/Request";
+import { RequestStatus } from "../../entities/Request";
+
+enum RequestStatusInput {
+  COMPLETED = "COMPLETED",
+  CANCELED = "CANCELED"
+}
+
+registerEnumType(RequestStatusInput, {
+  name: "RequestStatus",
+  description: "Request status options"
+});
 
 @ArgsType()
 export class UpdateRequestArgs {
@@ -11,5 +21,5 @@ export class UpdateRequestArgs {
 
   @Field(() => RequestStatusInput)
   @IsEnum(RequestStatusInput)
-  status: RequestStatusInput;
+  status: Exclude<RequestStatus, "PENDING">;
 }

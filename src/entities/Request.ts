@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
+import { ObjectType, Field, ID } from "type-graphql";
 import {
   Entity,
   BaseEntity,
@@ -12,21 +12,7 @@ import {
 import { User } from "./User";
 import { Pet } from "./Pet";
 
-export enum RequestStatusInput {
-  CANCELED = "CANCELED",
-  COMPLETED = "COMPLETED"
-}
-
-enum RequestStatus {
-  PENDING = "PENDING",
-  CANCELED = "CANCELED",
-  COMPLETED = "COMPLETED"
-}
-
-registerEnumType(RequestStatusInput, {
-  name: "RequestStatus",
-  description: "Request status options"
-});
+export type RequestStatus = "PENDING" | "COMPLETED" | "CANCELED";
 
 @ObjectType()
 @Entity("requests", { orderBy: { id: "ASC" } })
@@ -47,8 +33,8 @@ export class Request extends BaseEntity {
   @Field()
   @Column({
     type: "enum",
-    enum: RequestStatus,
-    default: RequestStatus.PENDING
+    enum: ["PENDING", "COMPLETED", "CANCELED"],
+    default: "PENDING"
   })
   status: RequestStatus;
 
