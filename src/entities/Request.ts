@@ -54,10 +54,16 @@ export class Request extends BaseEntity {
   locked: boolean;
 
   @Field(() => User)
-  @ManyToOne(() => User, user => user.requests, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, user => user.requests, {
+    onDelete: "CASCADE",
+    persistence: false
+  })
   user: User;
 
   @Field(() => Pet)
-  @ManyToOne(() => Pet, pet => pet.requests, { onDelete: "CASCADE" })
+  @ManyToOne(() => Pet, pet => pet.requests, {
+    onDelete: "CASCADE",
+    persistence: false
+  })
   pet: Pet;
 }

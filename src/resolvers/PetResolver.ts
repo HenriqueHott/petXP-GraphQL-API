@@ -26,9 +26,7 @@ export class PetResolver {
     if (!pet) throw new Error("Could not find pet");
 
     Object.assign(pet, args);
-    await Pet.update({ id: pet.id }, args);
-
-    return pet;
+    return await pet.save();
   }
 
   @Mutation(() => Boolean)

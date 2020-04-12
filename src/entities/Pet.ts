@@ -51,10 +51,13 @@ export class Pet extends BaseEntity {
   readonly updatedAt: Date;
 
   @Field(() => User, { nullable: true })
-  @ManyToOne(() => User, user => user.pets, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, user => user.pets, {
+    onDelete: "CASCADE",
+    persistence: false
+  })
   owner: User | null;
 
   @Field(() => [Request])
-  @OneToMany(() => Request, request => request.pet)
+  @OneToMany(() => Request, request => request.pet, { persistence: false })
   requests: Request[];
 }

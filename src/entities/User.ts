@@ -52,11 +52,11 @@ export class User extends BaseEntity {
   readonly updatedAt: Date;
 
   @Field(() => [Pet])
-  @OneToMany(() => Pet, pet => pet.owner)
+  @OneToMany(() => Pet, pet => pet.owner, { persistence: false })
   pets: Pet[];
 
   @Field(() => [Request])
-  @OneToMany(() => Request, request => request.user)
+  @OneToMany(() => Request, request => request.user, { persistence: false })
   requests: Request[];
 
   @BeforeInsert()

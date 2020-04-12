@@ -36,21 +36,14 @@ export class RequestResolver {
 
     if (request.locked) throw new Error("Request is already done");
 
-    const toUpdate: Partial<Request> = {
-      status,
-      locked: true
-    };
-
     if (status === "COMPLETED") {
-      toUpdate.completedAt = new Date();
+      request.completedAt = new Date();
 
       await Pet.update({ id: request.petId }, { ownerId: request.userId });
     }
 
-    Object.assign(request, toUpdate);
-    await Request.update({ id: request.id }, toUpdate);
-
-    return request;
+    Object.assign(request, { status, locked: true });
+    return await request.save();
   }
 
   @Mutation(() => Boolean)
