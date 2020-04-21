@@ -2,7 +2,7 @@ import { ArgsType, Field } from "type-graphql";
 import { IsString, Length, IsEmail, IsOptional } from "class-validator";
 
 @ArgsType()
-export class UserArgs {
+export abstract class UserArgs {
   @Field()
   @IsString()
   @Length(1, 255)

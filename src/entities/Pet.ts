@@ -1,24 +1,12 @@
-import { ObjectType, Field, ID, Int } from "type-graphql";
-import {
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  OneToMany
-} from "typeorm";
+import { ObjectType, Field, Int } from "type-graphql";
+import { Entity, Column, ManyToOne, OneToMany } from "typeorm";
 import { User } from "./User";
 import { Request } from "./Request";
+import { EntityNode } from "./Node";
 
 @ObjectType()
 @Entity("pets", { orderBy: { id: "ASC" } })
-export class Pet extends BaseEntity {
-  @Field(() => ID)
-  @PrimaryGeneratedColumn()
-  readonly id: string;
-
+export class Pet extends EntityNode {
   @Column("int", { nullable: true })
   ownerId: string | null;
 
@@ -41,14 +29,6 @@ export class Pet extends BaseEntity {
   @Field(() => Number, { nullable: true })
   @Column("float", { nullable: true })
   weight: number | null;
-
-  @Field()
-  @CreateDateColumn()
-  readonly createdAt: Date;
-
-  @Field()
-  @UpdateDateColumn()
-  readonly updatedAt: Date;
 
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, user => user.pets, {
