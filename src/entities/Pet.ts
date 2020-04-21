@@ -1,11 +1,11 @@
 import { ObjectType, Field, Int } from "type-graphql";
 import { Entity, Column, ManyToOne, OneToMany } from "typeorm";
+import { EntityNode } from "./Node";
 import { User } from "./User";
 import { Request } from "./Request";
-import { EntityNode } from "./Node";
 
 @ObjectType()
-@Entity("pets", { orderBy: { id: "ASC" } })
+@Entity("pets", { orderBy: { createdAt: "ASC" } })
 export class Pet extends EntityNode {
   @Column("int", { nullable: true })
   ownerId: string | null;

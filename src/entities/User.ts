@@ -1,12 +1,12 @@
 import { ObjectType, Field } from "type-graphql";
 import { Entity, Column, BeforeInsert, OneToMany } from "typeorm";
+import { EntityNode } from "./Node";
 import { hash } from "argon2";
 import { Pet } from "./Pet";
 import { Request } from "./Request";
-import { EntityNode } from "./Node";
 
 @ObjectType()
-@Entity("users", { orderBy: { id: "ASC" } })
+@Entity("users", { orderBy: { createdAt: "ASC" } })
 export class User extends EntityNode {
   @Field()
   @Column()

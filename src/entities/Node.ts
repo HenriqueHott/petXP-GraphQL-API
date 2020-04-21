@@ -20,6 +20,6 @@ export abstract class EntityNodeWithoutID extends BaseEntity {
 @ObjectType({ isAbstract: true })
 export abstract class EntityNode extends EntityNodeWithoutID {
   @Field(() => ID)
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   readonly id: string;
 }

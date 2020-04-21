@@ -1,25 +1,25 @@
 import { ObjectType, Field, ID } from "type-graphql";
 import { Entity, Column, PrimaryColumn, Generated, ManyToOne } from "typeorm";
+import { EntityNodeWithoutID } from "./Node";
 import { User } from "./User";
 import { Pet } from "./Pet";
-import { EntityNodeWithoutID } from "./Node";
 
 export type RequestStatus = "PENDING" | "COMPLETED" | "CANCELED";
 
 @ObjectType()
-@Entity("requests", { orderBy: { id: "ASC" } })
+@Entity("requests", { orderBy: { createdAt: "ASC" } })
 export class Request extends EntityNodeWithoutID {
   @Field(() => ID)
   @Column("int", { unique: true })
-  @Generated("increment")
+  @Generated("uuid")
   readonly id: string;
 
   @Field()
-  @PrimaryColumn("int")
+  @PrimaryColumn("uuid")
   readonly userId: string;
 
   @Field()
-  @PrimaryColumn("int")
+  @PrimaryColumn("uuid")
   readonly petId: string;
 
   @Field()
@@ -31,7 +31,7 @@ export class Request extends EntityNodeWithoutID {
   status: RequestStatus;
 
   @Field(() => Date, { nullable: true })
-  @Column("datetime", { nullable: true })
+  @Column("timestamp", { nullable: true })
   completedAt: Date | null;
 
   @Column({ default: false })
