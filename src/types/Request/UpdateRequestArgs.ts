@@ -1,5 +1,5 @@
 import { ArgsType, Field, ID, registerEnumType } from "type-graphql";
-import { IsString, Length, IsEnum } from "class-validator";
+import { IsUUID, IsEnum } from "class-validator";
 import { RequestStatus } from "../../entities/Request";
 
 enum RequestStatusInput {
@@ -15,8 +15,7 @@ registerEnumType(RequestStatusInput, {
 @ArgsType()
 export class UpdateRequestArgs {
   @Field(() => ID)
-  @IsString()
-  @Length(1, 255)
+  @IsUUID("4")
   id: string;
 
   @Field(() => RequestStatusInput)

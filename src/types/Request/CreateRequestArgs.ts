@@ -1,15 +1,13 @@
 import { ArgsType, Field } from "type-graphql";
-import { IsString, Length } from "class-validator";
+import { IsUUID } from "class-validator";
 
 @ArgsType()
 export class CreateRequestArgs {
   @Field()
-  @IsString()
-  @Length(1, 255)
+  @IsUUID("4")
   userId: string;
 
   @Field()
-  @IsString()
-  @Length(1, 255)
+  @IsUUID("4")
   petId: string;
 }
