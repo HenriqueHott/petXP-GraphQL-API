@@ -17,13 +17,18 @@ export class RequestResolver {
   @Mutation(() => Request)
   async createRequest(@Args() args: CreateRequestArgs): Promise<Request> {
     const request = Request.create(args);
-    const [user, pet] = await Promise.all([
+
+    if (await Request.findOne({ where: request, select: ["id"] })) {
+      throw new Error("Request already exists");
+    }
+
+    const [insertRequest, user, pet] = await Promise.all([
+      Request.insert(request),
       User.findOne({ where: { id: request.userId } }),
-      Pet.findOne({ where: { id: request.petId } }),
-      request.save()
+      Pet.findOne({ where: { id: request.petId } })
     ]);
 
-    Object.assign(request, { user, pet });
+    Object.assign(request, { ...insertRequest, user, pet });
     return request;
   }
 

@@ -10,7 +10,7 @@ export type RequestStatus = "PENDING" | "COMPLETED" | "CANCELED";
 @Entity("requests", { orderBy: { createdAt: "ASC" } })
 export class Request extends EntityNodeWithoutID {
   @Field(() => ID)
-  @Column("int", { unique: true })
+  @Column("uuid", { unique: true })
   @Generated("uuid")
   readonly id: string;
 
