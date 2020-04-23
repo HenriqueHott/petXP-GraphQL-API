@@ -20,6 +20,7 @@ import { validate } from "class-validator";
 import { FieldError } from "../gql-types/Object/FieldError";
 import { formatErrors } from "../utils/formatErrors";
 import { UserResponse } from "../gql-types/Response/User/UserResponse";
+import { errorResponse } from "../utils/errorResponse";
 
 const registerLoginGoodResponse = (user: User) => ({
   ok: true,
@@ -41,10 +42,7 @@ export class UserResolver {
   ): Promise<RegisterLoginResponse> {
     const validationErrors = await validate(args);
     if (validationErrors.length) {
-      return {
-        ok: false,
-        errors: formatErrors(validationErrors)
-      };
+      return errorResponse(formatErrors(validationErrors));
     }
 
     try {
@@ -64,10 +62,7 @@ export class UserResolver {
         errors.push({ message: "Unexpected error" });
       }
 
-      return {
-        ok: false,
-        errors
-      };
+      return errorResponse(errors);
     }
   }
 
@@ -78,10 +73,7 @@ export class UserResolver {
   ): Promise<RegisterLoginResponse> {
     const validationErrors = await validate(args);
     if (validationErrors.length) {
-      return {
-        ok: false,
-        errors: formatErrors(validationErrors)
-      };
+      return errorResponse(formatErrors(validationErrors));
     }
 
     const user = await User.findOne({
@@ -101,14 +93,11 @@ export class UserResolver {
     });
 
     if (!user || !(await verify(user.password, args.password))) {
-      return {
-        ok: false,
-        errors: [
-          {
-            message: invalidLogin
-          }
-        ]
-      };
+      return errorResponse([
+        {
+          message: invalidLogin
+        }
+      ]);
     }
 
     sendRefreshToken(res, user);
@@ -124,13 +113,10 @@ export class UserResolver {
   ): Promise<UserResponse> {
     const validationErrors = await validate(args);
     if (validationErrors.length) {
-      return {
-        ok: false,
-        errors: formatErrors(validationErrors)
-      };
+      return errorResponse(formatErrors(validationErrors));
     }
 
-    Object.assign(user, args);
+    Object.assign(user!, args);
     await user!.save();
 
     return {

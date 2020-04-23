@@ -2,7 +2,7 @@ import { ObjectType, Field } from "type-graphql";
 import { FieldError } from "./FieldError";
 
 @ObjectType({ isAbstract: true })
-export abstract class Response {
+export abstract class ResolverResponse {
   @Field()
   ok: boolean;
 
