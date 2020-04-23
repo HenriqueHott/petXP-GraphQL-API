@@ -15,10 +15,14 @@ export const createRefreshToken = ({ id, tokenVersion }: User) => {
 };
 
 export const sendRefreshToken = (res: Response, user: User): void => {
+  const date = new Date();
+  date.setDate(date.getDate() + 7); // add 1 week
+
   res.cookie(process.env.COOKIE_NAME!, createRefreshToken(user), {
     // domain: ".example.com",
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 1 week
+    expires: date,
     httpOnly: true,
-    path: "/refresh-access-token"
+    path: "/refresh-access-token",
+    secure: process.env.NODE_ENV === "production"
   });
 };

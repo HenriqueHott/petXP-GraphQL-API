@@ -2,7 +2,7 @@ import { MiddlewareFn } from "type-graphql";
 import { verify } from "jsonwebtoken";
 import { Context, Payload } from "../types";
 import { User } from "../entities/User";
-import { notAuthenticated } from "../constants";
+import { notAuthenticated, wrongTokenVersion } from "../constants";
 
 export const ValidateUser: MiddlewareFn<Context> = async (
   { context },
@@ -25,7 +25,7 @@ export const ValidateUser: MiddlewareFn<Context> = async (
     if (!user) throw new Error("Could not find user");
 
     if (payload.tokenVersion !== user.tokenVersion) {
-      throw new Error("Wrong token version");
+      throw new Error(wrongTokenVersion);
     }
 
     context.user = user;
