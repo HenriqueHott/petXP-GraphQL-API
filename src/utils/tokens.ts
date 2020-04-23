@@ -15,7 +15,7 @@ export const createRefreshToken = ({ id, tokenVersion }: User) => {
 };
 
 export const sendRefreshToken = (res: Response, user: User): void => {
-  res.cookie("jid", createRefreshToken(user), {
+  res.cookie(process.env.COOKIE_NAME!, createRefreshToken(user), {
     // domain: ".example.com",
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 1 week
     httpOnly: true,

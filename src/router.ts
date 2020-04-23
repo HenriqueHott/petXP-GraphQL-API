@@ -9,7 +9,7 @@ const router = Router();
 router.post("/refresh-access-token", async (req, res) => {
   let accessToken: string | null = null;
   try {
-    const token: string = req.cookies.jid;
+    const token: string = req.cookies[process.env.COOKIE_NAME!];
     if (!token) throw new Error("No refresh token");
 
     const { id, tokenVersion } = verify(

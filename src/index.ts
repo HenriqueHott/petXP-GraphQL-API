@@ -6,6 +6,8 @@ import { resolvers } from "./resolvers";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { router } from "./router";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 (async () => {
   await createConnection();
@@ -17,9 +19,13 @@ import { router } from "./router";
 
   const app = express();
 
-  app.use(router);
+  app.use([
+    cors({ credentials: true, origin: process.env.FRONTEND_HOST }),
+    cookieParser(),
+    router
+  ]);
 
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app, cors: false });
 
   const PORT = 4000;
   app.listen(PORT, () => {
