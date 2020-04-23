@@ -21,15 +21,11 @@ export class User extends EntityNode {
 
   @Field()
   @Column()
-  surname: string;
+  state: string;
 
   @Field()
   @Column()
-  taxRegistry: string;
-
-  @Field(() => String, { nullable: true })
-  @Column("varchar", { nullable: true })
-  address: string | null;
+  city: string;
 
   @Field(() => [Pet])
   @OneToMany(() => Pet, pet => pet.owner, { persistence: false })

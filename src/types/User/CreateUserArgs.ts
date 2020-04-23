@@ -8,9 +8,4 @@ export class CreateUserArgs extends UserArgs {
   @IsString()
   @Length(1, 255)
   password: string;
-
-  @Field()
-  @IsString()
-  @Length(1, 255)
-  taxRegistry: string;
 }
