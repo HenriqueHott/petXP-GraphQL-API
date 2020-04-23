@@ -10,4 +10,6 @@ export interface Context {
 export interface Payload {
   id: User["id"];
   tokenVersion: User["tokenVersion"];
+  iat: number;
+  exp: number;
 }
