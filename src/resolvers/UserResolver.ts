@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Arg, ID } from "type-graphql";
+import { Resolver, Query, Mutation, Args } from "type-graphql";
 import { User } from "../entities/User";
 import { CreateUserArgs } from "../types/User/CreateUserArgs";
 import { UpdateUserArgs } from "../types/User/UpdateUserArgs";
@@ -27,16 +27,5 @@ export class UserResolver {
 
     Object.assign(user, args);
     return await user.save();
-  }
-
-  @Mutation(() => Boolean)
-  async deleteUser(@Arg("id", () => ID) id: string): Promise<boolean> {
-    try {
-      await User.delete(id);
-      return true;
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
   }
 }

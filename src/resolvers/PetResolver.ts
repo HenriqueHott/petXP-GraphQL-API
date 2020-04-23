@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Arg, ID } from "type-graphql";
+import { Resolver, Query, Mutation, Args } from "type-graphql";
 import { Pet } from "../entities/Pet";
 import { CreatePetArgs } from "../types/Pet/CreatePetArgs";
 import { UpdatePetArgs } from "../types/Pet/UpdatePetArgs";
@@ -27,16 +27,5 @@ export class PetResolver {
 
     Object.assign(pet, args);
     return await pet.save();
-  }
-
-  @Mutation(() => Boolean)
-  async deletePet(@Arg("id", () => ID) id: string): Promise<boolean> {
-    try {
-      await Pet.delete(id);
-      return true;
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
   }
 }

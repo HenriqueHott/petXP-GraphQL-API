@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Arg, ID } from "type-graphql";
+import { Resolver, Query, Mutation, Args } from "type-graphql";
 import { Request } from "../entities/Request";
 import { CreateRequestArgs } from "../types/Request/CreateRequestArgs";
 import { UpdateRequestArgs } from "../types/Request/UpdateRequestArgs";
@@ -51,16 +51,5 @@ export class RequestResolver {
 
     Object.assign(request, { status, locked: true });
     return await request.save();
-  }
-
-  @Mutation(() => Boolean)
-  async deleteRequest(@Arg("id", () => ID) id: string): Promise<boolean> {
-    try {
-      await Request.delete(id);
-      return true;
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
   }
 }
