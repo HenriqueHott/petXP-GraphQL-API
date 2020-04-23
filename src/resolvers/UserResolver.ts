@@ -11,7 +11,7 @@ import { ValidateUser } from "../middleware/ValidateUser";
 import { Context } from "../types";
 import { RegisterUserArgs } from "../gql-types/Args/User/RegisterUserArgs";
 import { LoginArgs } from "../gql-types/Args/User/LoginArgs";
-import { invalidLogin } from "../constants";
+import { invalidLogin, unexpectedError } from "../constants";
 import { UserArgs } from "../gql-types/Args/User/UserArgs";
 import { sendRefreshToken, createAccessToken } from "../utils/tokens";
 import { verify } from "argon2";
@@ -59,7 +59,7 @@ export class UserResolver {
         });
       } else {
         console.log(err);
-        errors.push({ message: "Unexpected error" });
+        errors.push({ message: unexpectedError });
       }
 
       return errorResponse(errors);
