@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args } from "type-graphql";
 import { Pet } from "../entities/Pet";
-import { CreatePetArgs } from "../types/Pet/CreatePetArgs";
-import { UpdatePetArgs } from "../types/Pet/UpdatePetArgs";
+import { CreatePetArgs } from "../gql-types/Args/Pet/CreatePetArgs";
+import { UpdatePetArgs } from "../gql-types/Args/Pet/UpdatePetArgs";
 
 const relations: string[] = ["owner", "requests"];
 

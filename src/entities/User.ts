@@ -27,6 +27,9 @@ export class User extends EntityNode {
   @Column()
   city: string;
 
+  @Column("int", { default: 1 })
+  tokenVersion: number;
+
   @Field(() => [Pet])
   @OneToMany(() => Pet, pet => pet.owner, { persistence: false })
   pets: Pet[];

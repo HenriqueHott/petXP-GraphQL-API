@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args } from "type-graphql";
 import { Request } from "../entities/Request";
-import { CreateRequestArgs } from "../types/Request/CreateRequestArgs";
-import { UpdateRequestArgs } from "../types/Request/UpdateRequestArgs";
+import { CreateRequestArgs } from "../gql-types/Args/Request/CreateRequestArgs";
+import { UpdateRequestArgs } from "../gql-types/Args/Request/UpdateRequestArgs";
 import { User } from "../entities/User";
 import { Pet } from "../entities/Pet";
 

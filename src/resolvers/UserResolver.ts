@@ -1,31 +1,141 @@
-import { Resolver, Query, Mutation, Args } from "type-graphql";
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Ctx,
+  UseMiddleware
+} from "type-graphql";
 import { User } from "../entities/User";
-import { CreateUserArgs } from "../types/User/CreateUserArgs";
-import { UpdateUserArgs } from "../types/User/UpdateUserArgs";
+import { ValidateUser } from "../middleware/ValidateUser";
+import { Context } from "../types";
+import { RegisterUserArgs } from "../gql-types/Args/User/RegisterUserArgs";
+import { LoginArgs } from "../gql-types/Args/User/LoginArgs";
+import { invalidLogin } from "../constants";
+import { UserArgs } from "../gql-types/Args/User/UserArgs";
+import { sendRefreshToken, createAccessToken } from "../utils/tokens";
+import { verify } from "argon2";
+import { RegisterLoginResponse } from "../gql-types/Response/User/RegisterLoginResponse";
+import { validate } from "class-validator";
+import { FieldError } from "../gql-types/Object/FieldError";
+import { formatErrors } from "../utils/formatErrors";
+import { UserResponse } from "../gql-types/Response/User/UserResponse";
 
-const relations: string[] = ["pets", "requests"];
+const registerLoginGoodResponse = (user: User) => ({
+  ok: true,
+  user,
+  accessToken: createAccessToken(user)
+});
 
 @Resolver(User)
 export class UserResolver {
-  @Query(() => [User])
-  async users(): Promise<User[]> {
-    return await User.find({ relations });
+  @UseMiddleware(ValidateUser)
+  @Query(() => User)
+  me(@Ctx() { user }: Context): User {
+    return user!;
   }
 
-  @Mutation(() => User)
-  async createUser(@Args() args: CreateUserArgs): Promise<User> {
-    const user = await User.create(args).save();
-    Object.assign(user, { pets: [], requests: [] });
+  @Mutation(() => RegisterLoginResponse)
+  async register(
+    @Args() args: RegisterUserArgs
+  ): Promise<RegisterLoginResponse> {
+    const validationErrors = await validate(args);
+    if (validationErrors.length) {
+      return {
+        ok: false,
+        errors: formatErrors(validationErrors)
+      };
+    }
 
-    return user;
+    try {
+      const user = await User.create(args).save();
+      Object.assign(user, { pets: [], requests: [] });
+
+      return registerLoginGoodResponse(user);
+    } catch (err) {
+      const errors: FieldError[] = [];
+      if (err.detail.includes("already exists")) {
+        errors.push({
+          path: "email",
+          message: "email already registered"
+        });
+      } else {
+        console.log(err);
+        errors.push({ message: "Unexpected error" });
+      }
+
+      return {
+        ok: false,
+        errors
+      };
+    }
   }
 
-  @Mutation(() => User)
-  async updateUser(@Args() { id, ...args }: UpdateUserArgs): Promise<User> {
-    const user = await User.findOne({ where: { id }, relations });
-    if (!user) throw new Error("Could not find user");
+  @Mutation(() => RegisterLoginResponse)
+  async login(
+    @Args() args: LoginArgs,
+    @Ctx() { res }: Context
+  ): Promise<RegisterLoginResponse> {
+    const validationErrors = await validate(args);
+    if (validationErrors.length) {
+      return {
+        ok: false,
+        errors: formatErrors(validationErrors)
+      };
+    }
+
+    const user = await User.findOne({
+      where: { email: args.email },
+      relations: ["pets", "requests"],
+      select: [
+        "id",
+        "createdAt",
+        "updatedAt",
+        "name",
+        "email",
+        "password",
+        "state",
+        "city",
+        "tokenVersion"
+      ]
+    });
+
+    if (!user || !(await verify(user.password, args.password))) {
+      return {
+        ok: false,
+        errors: [
+          {
+            message: invalidLogin
+          }
+        ]
+      };
+    }
+
+    sendRefreshToken(res, user);
+
+    return registerLoginGoodResponse(user);
+  }
+
+  @UseMiddleware(ValidateUser)
+  @Mutation(() => UserResponse)
+  async updateMe(
+    @Args() args: UserArgs,
+    @Ctx() { user }: Context
+  ): Promise<UserResponse> {
+    const validationErrors = await validate(args);
+    if (validationErrors.length) {
+      return {
+        ok: false,
+        errors: formatErrors(validationErrors)
+      };
+    }
 
     Object.assign(user, args);
-    return await user.save();
+    await user!.save();
+
+    return {
+      ok: true,
+      user
+    };
   }
 }

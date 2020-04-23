@@ -1,6 +1,6 @@
 import { ArgsType, Field, ID, registerEnumType } from "type-graphql";
 import { IsUUID, IsEnum, IsOptional, IsString, Length } from "class-validator";
-import { RequestStatus } from "../../entities/Request";
+import { RequestStatus } from "../../../entities/Request";
 
 enum RequestStatusInput {
   COMPLETED = "COMPLETED",
