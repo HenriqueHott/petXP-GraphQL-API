@@ -1,6 +1,6 @@
 import { ArgsType, Field } from "type-graphql";
 import { UserArgs } from "./UserArgs";
-import { IsString, Length } from "class-validator";
+import { IsString, Length, IsEmail } from "class-validator";
 
 @ArgsType()
 export class CreateUserArgs extends UserArgs {
@@ -8,4 +8,9 @@ export class CreateUserArgs extends UserArgs {
   @IsString()
   @Length(1, 255)
   password: string;
+
+  @Field()
+  @IsEmail()
+  @Length(1, 255)
+  email: string;
 }

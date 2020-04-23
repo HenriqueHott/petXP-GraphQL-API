@@ -1,5 +1,5 @@
 import { ArgsType, Field } from "type-graphql";
-import { IsString, Length, IsEmail } from "class-validator";
+import { IsString, Length } from "class-validator";
 
 @ArgsType()
 export abstract class UserArgs {
@@ -7,11 +7,6 @@ export abstract class UserArgs {
   @IsString()
   @Length(1, 255)
   name: string;
-
-  @Field()
-  @IsEmail()
-  @Length(1, 255)
-  email: string;
 
   @Field()
   @IsString()
