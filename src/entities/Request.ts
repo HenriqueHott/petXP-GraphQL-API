@@ -37,6 +37,10 @@ export class Request extends EntityNodeWithoutID {
   @Column({ default: false })
   locked: boolean;
 
+  @Field(() => String, { nullable: true })
+  @Column("text", { nullable: true })
+  cancelReason: string | null;
+
   @Field(() => User)
   @ManyToOne(() => User, user => user.requests, {
     onDelete: "CASCADE",

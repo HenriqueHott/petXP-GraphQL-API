@@ -34,7 +34,7 @@ export class RequestResolver {
 
   @Mutation(() => Request)
   async updateRequest(
-    @Args() { id, status }: UpdateRequestArgs
+    @Args() { id, status, cancelReason }: UpdateRequestArgs
   ): Promise<Request> {
     const request = await Request.findOne({ where: { id }, relations });
     if (!request) throw new Error("Could not find request");
@@ -45,6 +45,8 @@ export class RequestResolver {
       request.completedAt = new Date();
 
       await Pet.update({ id: request.petId }, { ownerId: request.userId });
+    } else if (status === "CANCELED") {
+      request.cancelReason = cancelReason || null;
     }
 
     Object.assign(request, { status, locked: true });
