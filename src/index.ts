@@ -1,6 +1,6 @@
 import "dotenv/config";
 import "reflect-metadata";
-import { createConnection } from "typeorm";
+import { getConnectionOptions, createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { resolvers } from "./resolvers";
 import { ApolloServer } from "apollo-server-express";
@@ -10,7 +10,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 (async () => {
-  await createConnection();
+  const connectionOptions = await getConnectionOptions(process.env.NODE_ENV);
+  await createConnection({ ...connectionOptions, name: "default" });
 
   const server = new ApolloServer({
     schema: await buildSchema({ resolvers, validate: false }),
@@ -27,10 +28,9 @@ import cookieParser from "cookie-parser";
 
   server.applyMiddleware({ app, cors: false });
 
-  const PORT = 4000;
-  app.listen(PORT, () => {
+  app.listen(4000, () => {
     console.log(
-      `Server running on http://localhost:${PORT}${server.graphqlPath}`
+      `Server running on ${process.env.BACKEND_HOST}${server.graphqlPath}`
     );
   });
 })();
