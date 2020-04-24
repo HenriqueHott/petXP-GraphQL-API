@@ -3,9 +3,7 @@ import { createTypeormConn } from "../createTypeormConn";
 import { client, host } from ".";
 import { print } from "graphql";
 import { registerMutation } from "./documents/mutations/registerMutation";
-import { User } from "../entities/User";
-import { verify } from "argon2";
-import { emailRegistered } from "../constants";
+import { emailRegistered, invalidLogin } from "../constants";
 import { FieldError } from "../gql-types/Object/FieldError";
 import { loginMutation } from "./documents/mutations/loginMutation";
 import { meQuery } from "./documents/queries/meQuery";
@@ -57,18 +55,6 @@ describe("register", () => {
     expect(register.user.password).toBeUndefined();
     expect(register.accessToken).not.toBeNull();
     client.setHeader("authorization", `Bearer ${register.accessToken}`);
-
-    const user = await User.findOne({
-      where: { email: registerVariables.email },
-      select: ["password"]
-    });
-
-    expect(user).toBeDefined();
-    expect(user!.password).not.toEqual(registerVariables.password);
-
-    const valid = await verify(user!.password, registerVariables.password);
-
-    expect(valid).toEqual(true);
   });
 
   test("duplicate email", async () => {
@@ -174,6 +160,44 @@ describe("login", () => {
     expect(login.user.password).toBeUndefined();
     expect(login.accessToken).not.toBeNull();
     client.setHeader("authorization", `Bearer ${login.accessToken}`);
+  });
+
+  test("invalid password", async () => {
+    const { login } = await client.request(print(loginMutation), {
+      ...loginVariables,
+      password: "0123456789"
+    });
+
+    expect(login.ok).toEqual(false);
+    expect(login.errors).toEqual(
+      expect.arrayContaining([
+        {
+          path: null,
+          message: invalidLogin
+        }
+      ])
+    );
+    expect(login.user).toBeNull();
+    expect(login.accessToken).toBeNull();
+  });
+
+  test("invalid email", async () => {
+    const { login } = await client.request(print(loginMutation), {
+      ...loginVariables,
+      email: "tom@tom.com"
+    });
+
+    expect(login.ok).toEqual(false);
+    expect(login.errors).toEqual(
+      expect.arrayContaining([
+        {
+          path: null,
+          message: invalidLogin
+        }
+      ])
+    );
+    expect(login.user).toBeNull();
+    expect(login.accessToken).toBeNull();
   });
 
   test("validation", async () => {
