@@ -38,7 +38,8 @@ export class UserResolver {
 
   @Mutation(() => RegisterLoginResponse)
   async register(
-    @Args() args: RegisterUserArgs
+    @Args() args: RegisterUserArgs,
+    @Ctx() { res }: Context
   ): Promise<RegisterLoginResponse> {
     const validationErrors = await validate(args);
     if (validationErrors.length) {
@@ -48,6 +49,8 @@ export class UserResolver {
     try {
       const user = await User.create(args).save();
       Object.assign(user, { pets: [], requests: [] });
+
+      sendRefreshToken(res, user);
 
       return registerLoginGoodResponse(user);
     } catch (err) {
