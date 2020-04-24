@@ -7,22 +7,23 @@ import {
   IsInt,
   IsOptional
 } from "class-validator";
+import { validationStringLength } from "../../../constants";
 
 @ArgsType()
 export class CreatePetArgs {
   @Field()
   @IsString()
-  @Length(1, 255)
+  @Length(validationStringLength.min, validationStringLength.max)
   name: string;
 
   @Field()
   @IsString()
-  @Length(1, 255)
+  @Length(validationStringLength.min, validationStringLength.max)
   type: string;
 
   @Field()
   @IsString()
-  @Length(1, 255)
+  @Length(validationStringLength.min, validationStringLength.max)
   breed: string;
 
   @Field(() => Int)

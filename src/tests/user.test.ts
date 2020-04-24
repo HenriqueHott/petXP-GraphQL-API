@@ -3,7 +3,7 @@ import { createTypeormConn } from "../createTypeormConn";
 import { client, host } from ".";
 import { print } from "graphql";
 import { registerMutation } from "./documents/mutations/registerMutation";
-import { emailRegistered, invalidLogin } from "../constants";
+import { emailRegistered, invalidLogin, minPasswordLength } from "../constants";
 import { FieldError } from "../gql-types/Object/FieldError";
 import { loginMutation } from "./documents/mutations/loginMutation";
 import { meQuery } from "./documents/queries/meQuery";
@@ -99,7 +99,7 @@ describe("register", () => {
         },
         {
           path: "password",
-          message: getShortMessage("password", 8)
+          message: getShortMessage("password", minPasswordLength)
         },
         {
           path: "state",
@@ -219,7 +219,7 @@ describe("login", () => {
         },
         {
           path: "password",
-          message: getShortMessage("password", 8)
+          message: getShortMessage("password", minPasswordLength)
         }
       ])
     );

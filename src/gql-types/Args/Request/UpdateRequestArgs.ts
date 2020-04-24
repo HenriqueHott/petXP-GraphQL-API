@@ -25,6 +25,6 @@ export class UpdateRequestArgs {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(1)
+  @Length(1, 65536)
   cancelReason?: string | null;
 }

@@ -7,8 +7,8 @@ import { Request } from "./Request";
 @ObjectType()
 @Entity("pets", { orderBy: { createdAt: "ASC" } })
 export class Pet extends EntityNode {
-  @Column("int", { nullable: true })
-  ownerId: string | null;
+  @Column("uuid")
+  ownerId: string;
 
   @Field()
   @Column()
@@ -30,12 +30,12 @@ export class Pet extends EntityNode {
   @Column("float", { nullable: true })
   weight: number | null;
 
-  @Field(() => User, { nullable: true })
+  @Field(() => User)
   @ManyToOne(() => User, user => user.pets, {
     onDelete: "CASCADE",
     persistence: false
   })
-  owner: User | null;
+  owner: User;
 
   @Field(() => [Request])
   @OneToMany(() => Request, request => request.pet, { persistence: false })
