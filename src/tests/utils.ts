@@ -31,8 +31,7 @@ export const badLoginVariables: LoginArgs = {
 
 export const badRegisterVariables: RegisterUserArgs = {
   name: "yo",
-  email: "bo",
-  password: "123456",
+  ...badLoginVariables,
   city: "12",
   state: ":)"
 };

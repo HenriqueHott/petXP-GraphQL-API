@@ -173,6 +173,7 @@ describe("login", () => {
     expect(login.user).toEqual(expect.objectContaining(expectedData));
     expect(login.user.password).toBeUndefined();
     expect(login.accessToken).not.toBeNull();
+    client.setHeader("authorization", `Bearer ${login.accessToken}`);
   });
 
   test("validation", async () => {
