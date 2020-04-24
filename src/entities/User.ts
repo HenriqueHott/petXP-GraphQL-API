@@ -4,6 +4,7 @@ import { EntityNode } from "./Node";
 import { hash } from "argon2";
 import { Pet } from "./Pet";
 import { Request } from "./Request";
+import { Report } from "./Report";
 
 @ObjectType()
 @Entity("users", { orderBy: { createdAt: "ASC" } })
@@ -37,6 +38,15 @@ export class User extends EntityNode {
   @Field(() => [Request])
   @OneToMany(() => Request, request => request.user, { persistence: false })
   requests: Request[];
+
+  // @Field: Verificar se o usuario e o mesmo autor da request
+  @OneToMany(() => Report, report => report.source, { persistence: false })
+  reports: Report[];
+
+  // @Field: Verificar se o usuario e o mesmo autor da request
+  @OneToMany(() => Report, report => report.target, { persistence: false })
+  complaints: Report[];
+  
 
   @BeforeInsert()
   async hashPasswordBeforeInsert() {
