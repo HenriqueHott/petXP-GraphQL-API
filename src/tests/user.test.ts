@@ -3,6 +3,8 @@ import { createTypeormConn } from "../createTypeormConn";
 import { client, host } from ".";
 import { print } from "graphql";
 import { registerMutation } from "./documents/mutations/registerMutation";
+import { User } from "../entities/User";
+import { verify } from "argon2";
 import { emailRegistered } from "../constants";
 import { FieldError } from "../gql-types/Object/FieldError";
 import { loginMutation } from "./documents/mutations/loginMutation";
@@ -55,6 +57,18 @@ describe("register", () => {
     expect(register.user.password).toBeUndefined();
     expect(register.accessToken).not.toBeNull();
     client.setHeader("authorization", `Bearer ${register.accessToken}`);
+
+    const user = await User.findOne({
+      where: { email: registerVariables.email },
+      select: ["password"]
+    });
+
+    expect(user).toBeDefined();
+    expect(user!.password).not.toEqual(registerVariables.password);
+
+    const valid = await verify(user!.password, registerVariables.password);
+
+    expect(valid).toEqual(true);
   });
 
   test("duplicate email", async () => {
