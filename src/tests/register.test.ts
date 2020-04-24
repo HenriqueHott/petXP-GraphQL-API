@@ -53,7 +53,7 @@ describe("register and login", () => {
 
     cookie = headers.get("set-cookie");
 
-    expect(cookie).toBeDefined();
+    expect(cookie).toBeTruthy();
 
     const { register } = data;
 
