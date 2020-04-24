@@ -25,16 +25,18 @@ export const registerVariables: RegisterUserArgs = {
   ...loginVariables
 };
 
+const sliceStart = -2;
+
 export const badLoginVariables: LoginArgs = {
-  email: "bo",
-  password: "123456"
+  email: loginVariables.email.slice(sliceStart),
+  password: loginVariables.password.slice(sliceStart)
 };
 
 export const badRegisterVariables: RegisterUserArgs = {
-  name: "yo",
   ...badLoginVariables,
-  city: "12",
-  state: ":)"
+  name: registerVariables.name.slice(sliceStart),
+  city: registerVariables.city.slice(sliceStart),
+  state: registerVariables.state.slice(sliceStart)
 };
 
 export const updateMeVariables: UserArgs = {
