@@ -15,7 +15,7 @@ import {
   getShortMessage,
   loginVariables,
   badLoginVariables,
-  updateMeVariables
+  updateMeVariables,
 } from "./utils";
 
 beforeAll(async () => {
@@ -27,7 +27,7 @@ let cookie: string | undefined | null;
 describe("register", () => {
   test("refresh access token before", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST"
+      method: "POST",
     });
 
     expect(response.ok).toEqual(false);
@@ -68,8 +68,8 @@ describe("register", () => {
       expect.arrayContaining([
         {
           path: "email",
-          message: emailRegistered
-        }
+          message: emailRegistered,
+        },
       ])
     );
     expect(register.user).toBeNull();
@@ -87,28 +87,28 @@ describe("register", () => {
       expect.arrayContaining<FieldError>([
         {
           path: "name",
-          message: getShortMessage("name")
+          message: getShortMessage("name"),
         },
         {
           path: "email",
-          message: getShortMessage("email")
+          message: getShortMessage("email"),
         },
         {
           path: "email",
-          message: "email must be an email"
+          message: "email must be an email",
         },
         {
           path: "password",
-          message: getShortMessage("password", minPasswordLength)
+          message: getShortMessage("password", minPasswordLength),
         },
         {
           path: "state",
-          message: getShortMessage("state")
+          message: getShortMessage("state"),
         },
         {
           path: "city",
-          message: getShortMessage("city")
-        }
+          message: getShortMessage("city"),
+        },
       ])
     );
     expect(register.user).toBeNull();
@@ -118,7 +118,7 @@ describe("register", () => {
   test("refresh access token after", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
       method: "POST",
-      headers: { cookie: cookie! }
+      headers: { cookie: cookie! },
     });
 
     expect(response.ok).toEqual(true);
@@ -132,7 +132,7 @@ describe("register", () => {
 describe("login", () => {
   test("refresh access token before", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST"
+      method: "POST",
     });
 
     expect(response.ok).toEqual(false);
@@ -165,7 +165,7 @@ describe("login", () => {
   test("invalid password", async () => {
     const { login } = await client.request(print(loginMutation), {
       ...loginVariables,
-      password: "0123456789"
+      password: "0123456789",
     });
 
     expect(login.ok).toEqual(false);
@@ -173,8 +173,8 @@ describe("login", () => {
       expect.arrayContaining([
         {
           path: null,
-          message: invalidLogin
-        }
+          message: invalidLogin,
+        },
       ])
     );
     expect(login.user).toBeNull();
@@ -184,7 +184,7 @@ describe("login", () => {
   test("invalid email", async () => {
     const { login } = await client.request(print(loginMutation), {
       ...loginVariables,
-      email: "tom@tom.com"
+      email: "tom@tom.com",
     });
 
     expect(login.ok).toEqual(false);
@@ -192,8 +192,8 @@ describe("login", () => {
       expect.arrayContaining([
         {
           path: null,
-          message: invalidLogin
-        }
+          message: invalidLogin,
+        },
       ])
     );
     expect(login.user).toBeNull();
@@ -211,16 +211,16 @@ describe("login", () => {
       expect.arrayContaining<FieldError>([
         {
           path: "email",
-          message: getShortMessage("email")
+          message: getShortMessage("email"),
         },
         {
           path: "email",
-          message: "email must be an email"
+          message: "email must be an email",
         },
         {
           path: "password",
-          message: getShortMessage("password", minPasswordLength)
-        }
+          message: getShortMessage("password", minPasswordLength),
+        },
       ])
     );
     expect(login.user).toBeNull();
@@ -230,7 +230,7 @@ describe("login", () => {
   test("refresh access token after", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
       method: "POST",
-      headers: { cookie: cookie! }
+      headers: { cookie: cookie! },
     });
 
     expect(response.ok).toEqual(true);
@@ -260,7 +260,7 @@ describe("me", () => {
     expect(updateMe.user).toEqual(
       expect.objectContaining({
         ...expectedData,
-        ...updateMeVariables
+        ...updateMeVariables,
       })
     );
     expect(updateMe.user.password).toBeUndefined();
