@@ -10,7 +10,7 @@ export const getShortMessage = (
 
 export const expectedData: Omit<RegisterUserArgs, "password"> = {
   name: "Bob",
-  email: "bob@bob.com",
+  email: "bob@constructor.com",
   state: "California",
   city: "Los Angeles"
 };
@@ -23,6 +23,12 @@ export const loginVariables: LoginArgs = {
 export const registerVariables: RegisterUserArgs = {
   ...expectedData,
   ...loginVariables
+};
+
+export const updateMeVariables: UserArgs = {
+  name: "Bob, o construtor",
+  state: "Florida",
+  city: "Orlando"
 };
 
 const sliceStart = -2;
@@ -39,8 +45,8 @@ export const badRegisterVariables: RegisterUserArgs = {
   state: registerVariables.state.slice(sliceStart)
 };
 
-export const updateMeVariables: UserArgs = {
-  name: "Tom",
-  state: "Florida",
-  city: "Orlando"
+export const badUpdateMeVariables: UserArgs = {
+  name: updateMeVariables.name.slice(sliceStart),
+  state: updateMeVariables.state.slice(sliceStart),
+  city: updateMeVariables.city.slice(sliceStart)
 };

@@ -16,6 +16,7 @@ import {
   loginVariables,
   badLoginVariables,
   updateMeVariables,
+  badUpdateMeVariables
 } from "./utils";
 
 beforeAll(async () => {
@@ -27,10 +28,10 @@ let cookie: string | undefined | null;
 describe("register", () => {
   test("refresh access token before", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST",
+      method: "POST"
     });
 
-    expect(response.ok).toEqual(false);
+    expect(response.ok).toBe(false);
 
     const { accessToken } = await response.json();
 
@@ -49,7 +50,7 @@ describe("register", () => {
 
     const { register } = data;
 
-    expect(register.ok).toEqual(true);
+    expect(register.ok).toBe(true);
     expect(register.errors).toBeNull();
     expect(register.user).toEqual(expect.objectContaining(expectedData));
     expect(register.user.password).toBeUndefined();
@@ -63,13 +64,13 @@ describe("register", () => {
       registerVariables
     );
 
-    expect(register.ok).toEqual(false);
+    expect(register.ok).toBe(false);
     expect(register.errors).toEqual(
       expect.arrayContaining([
         {
           path: "email",
-          message: emailRegistered,
-        },
+          message: emailRegistered
+        }
       ])
     );
     expect(register.user).toBeNull();
@@ -82,33 +83,33 @@ describe("register", () => {
       badRegisterVariables
     );
 
-    expect(register.ok).toEqual(false);
+    expect(register.ok).toBe(false);
     expect(register.errors).toEqual(
       expect.arrayContaining<FieldError>([
         {
           path: "name",
-          message: getShortMessage("name"),
+          message: getShortMessage("name")
         },
         {
           path: "email",
-          message: getShortMessage("email"),
+          message: getShortMessage("email")
         },
         {
           path: "email",
-          message: "email must be an email",
+          message: "email must be an email"
         },
         {
           path: "password",
-          message: getShortMessage("password", minPasswordLength),
+          message: getShortMessage("password", minPasswordLength)
         },
         {
           path: "state",
-          message: getShortMessage("state"),
+          message: getShortMessage("state")
         },
         {
           path: "city",
-          message: getShortMessage("city"),
-        },
+          message: getShortMessage("city")
+        }
       ])
     );
     expect(register.user).toBeNull();
@@ -118,10 +119,10 @@ describe("register", () => {
   test("refresh access token after", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
       method: "POST",
-      headers: { cookie: cookie! },
+      headers: { cookie: cookie! }
     });
 
-    expect(response.ok).toEqual(true);
+    expect(response.ok).toBe(true);
 
     const { accessToken } = await response.json();
 
@@ -132,10 +133,10 @@ describe("register", () => {
 describe("login", () => {
   test("refresh access token before", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST",
+      method: "POST"
     });
 
-    expect(response.ok).toEqual(false);
+    expect(response.ok).toBe(false);
 
     const { accessToken } = await response.json();
 
@@ -154,7 +155,7 @@ describe("login", () => {
 
     const { login } = data;
 
-    expect(login.ok).toEqual(true);
+    expect(login.ok).toBe(true);
     expect(login.errors).toBeNull();
     expect(login.user).toEqual(expect.objectContaining(expectedData));
     expect(login.user.password).toBeUndefined();
@@ -165,16 +166,16 @@ describe("login", () => {
   test("invalid password", async () => {
     const { login } = await client.request(print(loginMutation), {
       ...loginVariables,
-      password: "0123456789",
+      password: "0123456789"
     });
 
-    expect(login.ok).toEqual(false);
+    expect(login.ok).toBe(false);
     expect(login.errors).toEqual(
       expect.arrayContaining([
         {
           path: null,
-          message: invalidLogin,
-        },
+          message: invalidLogin
+        }
       ])
     );
     expect(login.user).toBeNull();
@@ -184,16 +185,16 @@ describe("login", () => {
   test("invalid email", async () => {
     const { login } = await client.request(print(loginMutation), {
       ...loginVariables,
-      email: "tom@tom.com",
+      email: "tom@tom.com"
     });
 
-    expect(login.ok).toEqual(false);
+    expect(login.ok).toBe(false);
     expect(login.errors).toEqual(
       expect.arrayContaining([
         {
           path: null,
-          message: invalidLogin,
-        },
+          message: invalidLogin
+        }
       ])
     );
     expect(login.user).toBeNull();
@@ -206,21 +207,21 @@ describe("login", () => {
       badLoginVariables
     );
 
-    expect(login.ok).toEqual(false);
+    expect(login.ok).toBe(false);
     expect(login.errors).toEqual(
       expect.arrayContaining<FieldError>([
         {
           path: "email",
-          message: getShortMessage("email"),
+          message: getShortMessage("email")
         },
         {
           path: "email",
-          message: "email must be an email",
+          message: "email must be an email"
         },
         {
           path: "password",
-          message: getShortMessage("password", minPasswordLength),
-        },
+          message: getShortMessage("password", minPasswordLength)
+        }
       ])
     );
     expect(login.user).toBeNull();
@@ -230,10 +231,10 @@ describe("login", () => {
   test("refresh access token after", async () => {
     const response = await fetch(`${host}/refresh-access-token`, {
       method: "POST",
-      headers: { cookie: cookie! },
+      headers: { cookie: cookie! }
     });
 
-    expect(response.ok).toEqual(true);
+    expect(response.ok).toBe(true);
 
     const { accessToken } = await response.json();
 
@@ -241,28 +242,56 @@ describe("login", () => {
   });
 });
 
-describe("me", () => {
-  test("me query", async () => {
+describe("me query", () => {
+  test("query", async () => {
     const { me } = await client.request(print(meQuery));
 
     expect(me).toEqual(expect.objectContaining(expectedData));
     expect(me.password).toBeUndefined();
   });
+});
 
-  test("update me mutation", async () => {
+describe("update me", () => {
+  test("mutation", async () => {
     const { updateMe } = await client.request(
       print(updateMeMutation),
       updateMeVariables
     );
 
-    expect(updateMe.ok).toEqual(true);
+    expect(updateMe.ok).toBe(true);
     expect(updateMe.errors).toBeNull();
     expect(updateMe.user).toEqual(
       expect.objectContaining({
         ...expectedData,
-        ...updateMeVariables,
+        ...updateMeVariables
       })
     );
     expect(updateMe.user.password).toBeUndefined();
+  });
+
+  test("validation", async () => {
+    const { updateMe } = await client.request(
+      print(updateMeMutation),
+      badUpdateMeVariables
+    );
+
+    expect(updateMe.ok).toBe(false);
+    expect(updateMe.errors).toEqual(
+      expect.arrayContaining<FieldError>([
+        {
+          path: "name",
+          message: getShortMessage("name")
+        },
+        {
+          path: "state",
+          message: getShortMessage("state")
+        },
+        {
+          path: "city",
+          message: getShortMessage("city")
+        }
+      ])
+    );
+    expect(updateMe.user).toBeNull();
   });
 });
