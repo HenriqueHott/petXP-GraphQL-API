@@ -1,6 +1,4 @@
 import { client } from ".";
-import { print } from "graphql";
-import { updateMeMutation } from "./documents/mutations/updateMeMutation";
 import { FieldError } from "../gql-types/Object/FieldError";
 import {
   updateMeVariables,
@@ -11,10 +9,7 @@ import {
 
 export const updateMeModule = () => {
   test("mutation", async () => {
-    const { updateMe } = await client.request(
-      print(updateMeMutation),
-      updateMeVariables
-    );
+    const { updateMe } = await client.updateMe(updateMeVariables);
 
     expect(updateMe.ok).toBe(true);
     expect(updateMe.errors).toBeNull();
@@ -28,10 +23,7 @@ export const updateMeModule = () => {
   });
 
   test("validation", async () => {
-    const { updateMe } = await client.request(
-      print(updateMeMutation),
-      badUpdateMeVariables
-    );
+    const { updateMe } = await client.updateMe(badUpdateMeVariables);
 
     expect(updateMe.ok).toBe(false);
     expect(updateMe.errors).toEqual(

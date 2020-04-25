@@ -1,4 +1,4 @@
-import { GraphQLClient } from "graphql-request";
+import "dotenv/config";
+import { TestClient } from "./TestClient";
 
-export const host = process.env.BACKEND_HOST!;
-export const client = new GraphQLClient(`${host}/graphql`);
+export const client = new TestClient(process.env.BACKEND_HOST!);

@@ -1,6 +1,4 @@
-import { host, client } from ".";
-import { print } from "graphql";
-import { registerMutation } from "./documents/mutations/registerMutation";
+import { client } from ".";
 import { emailRegistered, minPasswordLength } from "../constants";
 import { FieldError } from "../gql-types/Object/FieldError";
 import {
@@ -10,13 +8,10 @@ import {
   getShortMessage
 } from "./utils";
 
-let cookie: string | undefined | null;
-
 export const registerModule = () => {
   test("refresh access token before", async () => {
-    const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST"
-    });
+    client.setCookie(null);
+    const response = await client.refreshAccessToken();
 
     expect(response.ok).toBe(false);
 
@@ -26,30 +21,26 @@ export const registerModule = () => {
   });
 
   test("normal register", async () => {
-    const { data, headers } = await client.rawRequest(
-      print(registerMutation),
-      registerVariables
-    );
+    const {
+      data: { register },
+      headers
+    } = await client.rawRegister(registerVariables);
 
-    cookie = headers.get("set-cookie");
+    const cookie = headers.get("set-cookie");
 
     expect(cookie).toBeTruthy();
 
-    const { register } = data;
+    client.setCookie(cookie);
 
     expect(register.ok).toBe(true);
     expect(register.errors).toBeNull();
     expect(register.user).toEqual(expect.objectContaining(expectedData));
     expect(register.user.password).toBeUndefined();
     expect(register.accessToken).not.toBeNull();
-    client.setHeader("authorization", `Bearer ${register.accessToken}`);
   });
 
   test("duplicate email", async () => {
-    const { register } = await client.request(
-      print(registerMutation),
-      registerVariables
-    );
+    const { register } = await client.register(registerVariables);
 
     expect(register.ok).toBe(false);
     expect(register.errors).toEqual(
@@ -65,10 +56,7 @@ export const registerModule = () => {
   });
 
   test("validation", async () => {
-    const { register } = await client.request(
-      print(registerMutation),
-      badRegisterVariables
-    );
+    const { register } = await client.register(badRegisterVariables);
 
     expect(register.ok).toBe(false);
     expect(register.errors).toEqual(
@@ -104,10 +92,7 @@ export const registerModule = () => {
   });
 
   test("refresh access token after", async () => {
-    const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST",
-      headers: { cookie: cookie! }
-    });
+    const response = await client.refreshAccessToken();
 
     expect(response.ok).toBe(true);
 

@@ -1,6 +1,4 @@
-import { host, client } from ".";
-import { print } from "graphql";
-import { loginMutation } from "./documents/mutations/loginMutation";
+import { client } from ".";
 import { invalidLogin, minPasswordLength } from "../constants";
 import { FieldError } from "../gql-types/Object/FieldError";
 import {
@@ -10,13 +8,10 @@ import {
   getShortMessage
 } from "./utils";
 
-let cookie: string | undefined | null;
-
 export const loginModule = () => {
   test("refresh access token before", async () => {
-    const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST"
-    });
+    client.setCookie(null);
+    const response = await client.refreshAccessToken();
 
     expect(response.ok).toBe(false);
 
@@ -26,27 +21,26 @@ export const loginModule = () => {
   });
 
   test("normal login", async () => {
-    const { data, headers } = await client.rawRequest(
-      print(loginMutation),
-      loginVariables
-    );
+    const {
+      data: { login },
+      headers
+    } = await client.rawLogin(loginVariables);
 
-    cookie = headers.get("set-cookie");
+    const cookie = headers.get("set-cookie");
 
     expect(cookie).toBeTruthy();
 
-    const { login } = data;
+    client.setCookie(cookie);
 
     expect(login.ok).toBe(true);
     expect(login.errors).toBeNull();
     expect(login.user).toEqual(expect.objectContaining(expectedData));
     expect(login.user.password).toBeUndefined();
     expect(login.accessToken).not.toBeNull();
-    client.setHeader("authorization", `Bearer ${login.accessToken}`);
   });
 
   test("invalid password", async () => {
-    const { login } = await client.request(print(loginMutation), {
+    const { login } = await client.login({
       ...loginVariables,
       password: "0123456789"
     });
@@ -65,7 +59,7 @@ export const loginModule = () => {
   });
 
   test("invalid email", async () => {
-    const { login } = await client.request(print(loginMutation), {
+    const { login } = await client.login({
       ...loginVariables,
       email: "tom@tom.com"
     });
@@ -84,10 +78,7 @@ export const loginModule = () => {
   });
 
   test("validation", async () => {
-    const { login } = await client.request(
-      print(loginMutation),
-      badLoginVariables
-    );
+    const { login } = await client.login(badLoginVariables);
 
     expect(login.ok).toBe(false);
     expect(login.errors).toEqual(
@@ -111,10 +102,7 @@ export const loginModule = () => {
   });
 
   test("refresh access token after", async () => {
-    const response = await fetch(`${host}/refresh-access-token`, {
-      method: "POST",
-      headers: { cookie: cookie! }
-    });
+    const response = await client.refreshAccessToken();
 
     expect(response.ok).toBe(true);
 
