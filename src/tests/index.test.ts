@@ -13,8 +13,8 @@ beforeAll(async () => {
 });
 
 describe("register", registerModule);
+describe("me", meModule);
 describe("login", loginModule);
-describe("me query", meModule);
 describe("update me", updateMeModule);
 
 afterAll(async () => {

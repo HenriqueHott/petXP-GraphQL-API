@@ -10,4 +10,9 @@ export const meModule = () => {
     expect(me).toEqual(expect.objectContaining(expectedData));
     expect(me.password).toBeUndefined();
   });
+
+  test("expect error with wrong authorization header", async () => {
+    client.setHeader("authorization", "Bearer no-token");
+    await expect(client.request(print(meQuery))).rejects.toThrow();
+  });
 };
