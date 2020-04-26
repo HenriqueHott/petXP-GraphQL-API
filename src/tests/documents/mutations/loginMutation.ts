@@ -16,6 +16,6 @@ export const loginMutation = gql`
     }
   }
 
-  ${userFieldsFragment}
   ${errorFieldsFragment}
+  ${userFieldsFragment}
 `;

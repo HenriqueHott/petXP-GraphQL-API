@@ -36,9 +36,12 @@ const registerLoginGoodResponse = (user: User): IRegisterLoginResponse => ({
 @Resolver(User)
 export class UserResolver {
   @UseMiddleware(ValidateUser)
-  @Query(() => User)
-  me(@Ctx() { user }: Context): User {
-    return user!;
+  @Query(() => UserResponse)
+  me(@Ctx() { user }: Context): IResolverResponse<IUserResponse> {
+    return {
+      ok: true,
+      user: user!
+    };
   }
 
   @Mutation(() => RegisterLoginResponse)

@@ -10,7 +10,7 @@ export interface IGoodResponse {
   ok: true;
 }
 
-export type IResolverResponse<T> = IErrorResponse | (T & IGoodResponse);
+export type IResolverResponse<T extends IGoodResponse> = IErrorResponse | T;
 
 export interface IUserResponse extends IGoodResponse {
   user: User;

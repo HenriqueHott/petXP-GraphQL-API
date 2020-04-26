@@ -28,6 +28,6 @@ export const registerMutation = gql`
     }
   }
 
-  ${userFieldsFragment}
   ${errorFieldsFragment}
+  ${userFieldsFragment}
 `;

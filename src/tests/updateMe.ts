@@ -6,6 +6,7 @@ import {
   badUpdateMeVariables,
   getShortMessage
 } from "./utils";
+import { notAuthenticated } from "../constants";
 
 export const updateMeModule = () => {
   test("mutation", async () => {
@@ -42,6 +43,20 @@ export const updateMeModule = () => {
         }
       ])
     );
+    expect(updateMe.user).toBeNull();
+  });
+
+  test("expect error with wrong authorization header", async () => {
+    client.setAuthHeader(null);
+    const { updateMe } = await client.updateMe(updateMeVariables);
+
+    expect(updateMe.ok).toBe(false);
+    expect(updateMe.errors).toEqual([
+      {
+        path: null,
+        message: notAuthenticated
+      }
+    ]);
     expect(updateMe.user).toBeNull();
   });
 };

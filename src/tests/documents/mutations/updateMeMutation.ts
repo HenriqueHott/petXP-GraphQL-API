@@ -15,6 +15,6 @@ export const updateMeMutation = gql`
     }
   }
 
-  ${userFieldsFragment}
   ${errorFieldsFragment}
+  ${userFieldsFragment}
 `;

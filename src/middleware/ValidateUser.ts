@@ -1,13 +1,14 @@
-import { MiddlewareFn } from "type-graphql";
+import { MiddlewareFn, NextFn } from "type-graphql";
 import { verify } from "jsonwebtoken";
 import { Context, Payload } from "../types";
 import { User } from "../entities/User";
 import { notAuthenticated, wrongTokenVersion } from "../constants";
+import { IErrorResponse } from "../resolvers/types";
 
 export const ValidateUser: MiddlewareFn<Context> = async (
   { context },
   next
-) => {
+): Promise<NextFn | IErrorResponse> => {
   const { authorization } = context.req.headers;
   if (!authorization) throw new Error(notAuthenticated);
 
@@ -31,9 +32,16 @@ export const ValidateUser: MiddlewareFn<Context> = async (
     context.user = user;
   } catch (err) {
     console.log(err);
-    context.res.status(401);
-    throw new Error(notAuthenticated);
+
+    return {
+      ok: false,
+      errors: [
+        {
+          message: notAuthenticated
+        }
+      ]
+    };
   }
 
-  return await next();
+  return next();
 };
