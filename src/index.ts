@@ -2,7 +2,6 @@ import "dotenv/config";
 import "reflect-metadata";
 import { createTypeormConn } from "./createTypeormConn";
 import { buildSchema } from "type-graphql";
-import { resolvers } from "./resolvers";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { router } from "./router";
@@ -13,7 +12,10 @@ import cookieParser from "cookie-parser";
   await createTypeormConn();
 
   const server = new ApolloServer({
-    schema: await buildSchema({ resolvers, validate: false }),
+    schema: await buildSchema({
+      resolvers: [`${__dirname}/resolvers/*Resolver.[tj]s`],
+      validate: false
+    }),
     context: ({ req, res }) => ({ req, res })
   });
 

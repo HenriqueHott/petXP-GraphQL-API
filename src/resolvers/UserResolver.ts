@@ -128,11 +128,10 @@ export class UserResolver {
     }
 
     Object.assign(user!, args);
-    await user!.save();
 
     return {
       ok: true,
-      user: user!
+      user: await user!.save()
     };
   }
 }
