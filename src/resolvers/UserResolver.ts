@@ -21,8 +21,13 @@ import { FieldError } from "../gql-types/Object/FieldError";
 import { formatErrors } from "../utils/formatErrors";
 import { UserResponse } from "../gql-types/Response/User/UserResponse";
 import { errorResponse } from "../utils/errorResponse";
+import {
+  IResolverResponse,
+  IUserResponse,
+  IRegisterLoginResponse
+} from "./types";
 
-const registerLoginGoodResponse = (user: User) => ({
+const registerLoginGoodResponse = (user: User): IRegisterLoginResponse => ({
   ok: true,
   user,
   accessToken: createAccessToken(user)
@@ -40,7 +45,7 @@ export class UserResolver {
   async register(
     @Args() args: RegisterUserArgs,
     @Ctx() { res }: Context
-  ): Promise<RegisterLoginResponse> {
+  ): Promise<IResolverResponse<IRegisterLoginResponse>> {
     const validationErrors = await validate(args);
     if (validationErrors.length) {
       return errorResponse(formatErrors(validationErrors));
@@ -73,7 +78,7 @@ export class UserResolver {
   async login(
     @Args() args: LoginArgs,
     @Ctx() { res }: Context
-  ): Promise<RegisterLoginResponse> {
+  ): Promise<IResolverResponse<IRegisterLoginResponse>> {
     const validationErrors = await validate(args);
     if (validationErrors.length) {
       return errorResponse(formatErrors(validationErrors));
@@ -113,7 +118,7 @@ export class UserResolver {
   async updateMe(
     @Args() args: UserArgs,
     @Ctx() { user }: Context
-  ): Promise<UserResponse> {
+  ): Promise<IResolverResponse<IUserResponse>> {
     const validationErrors = await validate(args);
     if (validationErrors.length) {
       return errorResponse(formatErrors(validationErrors));
@@ -124,7 +129,7 @@ export class UserResolver {
 
     return {
       ok: true,
-      user
+      user: user!
     };
   }
 }

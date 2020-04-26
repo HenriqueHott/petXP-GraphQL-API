@@ -1,7 +1,7 @@
 import { FieldError } from "../gql-types/Object/FieldError";
-import { ResolverResponse } from "../gql-types/Object/Response";
+import { IErrorResponse } from "../resolvers/types";
 
-export const errorResponse = (errors: FieldError[]): ResolverResponse => ({
+export const errorResponse = (errors: FieldError[]): IErrorResponse => ({
   ok: false,
   errors
 });
