@@ -1,12 +1,12 @@
-import { client } from ".";
-import { invalidLogin, minPasswordLength } from "../constants";
-import { FieldError } from "../gql-types/Object/FieldError";
+import { client } from "..";
+import { invalidLogin, minPasswordLength } from "../../constants";
+import { FieldError } from "../../gql-types/Object/FieldError";
 import {
   loginVariables,
   expectedData,
   badLoginVariables,
   getShortMessage
-} from "./utils";
+} from "../utils";
 
 export const loginModule = () => {
   test("refresh access token before", async () => {
@@ -21,10 +21,7 @@ export const loginModule = () => {
   });
 
   test("normal login", async () => {
-    const {
-      data: { login },
-      headers
-    } = await client.rawLogin(loginVariables);
+    const { data, headers } = await client.rawLogin(loginVariables);
 
     const cookie = headers.get("set-cookie");
 
@@ -32,10 +29,12 @@ export const loginModule = () => {
 
     client.setCookie(cookie);
 
+    const { login } = data!;
+
     expect(login.ok).toBe(true);
     expect(login.errors).toBeNull();
     expect(login.user).toEqual(expect.objectContaining(expectedData));
-    expect(login.user.password).toBeUndefined();
+    expect(login.user!.password).toBeUndefined();
     expect(login.accessToken).not.toBeNull();
   });
 

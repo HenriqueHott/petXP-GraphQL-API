@@ -1,12 +1,12 @@
-import { client } from ".";
-import { FieldError } from "../gql-types/Object/FieldError";
+import { client } from "..";
+import { FieldError } from "../../gql-types/Object/FieldError";
 import {
   updateMeVariables,
   expectedData,
   badUpdateMeVariables,
   getShortMessage
-} from "./utils";
-import { notAuthenticated } from "../constants";
+} from "../utils";
+import { notAuthenticated } from "../../constants";
 
 export const updateMeModule = () => {
   test("mutation", async () => {
@@ -20,7 +20,7 @@ export const updateMeModule = () => {
         ...updateMeVariables
       })
     );
-    expect(updateMe.user.password).toBeUndefined();
+    expect(updateMe.user!.password).toBeUndefined();
   });
 
   test("validation", async () => {

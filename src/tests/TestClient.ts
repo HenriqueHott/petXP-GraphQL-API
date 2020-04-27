@@ -8,8 +8,16 @@ import { loginMutation } from "./documents/mutations/loginMutation";
 import { meQuery } from "./documents/queries/meQuery";
 import { UserArgs } from "../gql-types/Args/User/UserArgs";
 import { updateMeMutation } from "./documents/mutations/updateMeMutation";
+import { RegisterLoginResponse } from "../gql-types/Response/User/RegisterLoginResponse";
+import { UserResponse } from "../gql-types/Response/User/UserResponse";
 
 type Token = string | null | undefined;
+type ClientUserResponse<T extends "me" | "updateMe"> = {
+  [K in T]: Required<UserResponse>;
+};
+type ClientRegisterLoginResponse<T extends "login" | "register"> = {
+  [K in T]: Required<RegisterLoginResponse>;
+};
 
 export class TestClient {
   private client: GraphQLClient;
@@ -39,42 +47,49 @@ export class TestClient {
   }
 
   async rawRegister(variables: RegisterUserArgs) {
-    const response = await this.client.rawRequest(
-      print(registerMutation),
-      variables
-    );
+    const response = await this.client.rawRequest<
+      ClientRegisterLoginResponse<"register">
+    >(print(registerMutation), variables);
 
-    this.accessToken = response.data.register.accessToken;
+    this.accessToken = response.data!.register.accessToken;
     this.setAuthHeader();
 
     return response;
   }
 
   register(variables: RegisterUserArgs) {
-    return this.client.request(print(registerMutation), variables);
+    return this.client.request<ClientRegisterLoginResponse<"register">>(
+      print(registerMutation),
+      variables
+    );
   }
 
   async rawLogin(variables: LoginArgs) {
-    const response = await this.client.rawRequest(
-      print(loginMutation),
-      variables
-    );
+    const response = await this.client.rawRequest<
+      ClientRegisterLoginResponse<"login">
+    >(print(loginMutation), variables);
 
-    this.accessToken = response.data.login.accessToken;
+    this.accessToken = response.data!.login.accessToken;
     this.setAuthHeader();
 
     return response;
   }
 
   login(variables: LoginArgs) {
-    return this.client.request(print(loginMutation), variables);
+    return this.client.request<ClientRegisterLoginResponse<"login">>(
+      print(loginMutation),
+      variables
+    );
   }
 
   me() {
-    return this.client.request(print(meQuery));
+    return this.client.request<ClientUserResponse<"me">>(print(meQuery));
   }
 
   updateMe(variables: UserArgs) {
-    return this.client.request(print(updateMeMutation), variables);
+    return this.client.request<ClientUserResponse<"updateMe">>(
+      print(updateMeMutation),
+      variables
+    );
   }
 }

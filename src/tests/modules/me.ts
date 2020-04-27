@@ -1,6 +1,6 @@
-import { client } from ".";
-import { expectedData } from "./utils";
-import { notAuthenticated } from "../constants";
+import { client } from "..";
+import { expectedData } from "../utils";
+import { notAuthenticated } from "../../constants";
 
 export const meModule = () => {
   test("query", async () => {
@@ -9,7 +9,7 @@ export const meModule = () => {
     expect(me.ok).toBe(true);
     expect(me.errors).toBeNull();
     expect(me.user).toEqual(expect.objectContaining(expectedData));
-    expect(me.user.password).toBeUndefined();
+    expect(me.user!.password).toBeUndefined();
   });
 
   test("expect error with wrong authorization header", async () => {

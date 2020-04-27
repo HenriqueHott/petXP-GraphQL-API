@@ -1,12 +1,12 @@
-import { client } from ".";
-import { emailRegistered, minPasswordLength } from "../constants";
-import { FieldError } from "../gql-types/Object/FieldError";
+import { client } from "..";
+import { emailRegistered, minPasswordLength } from "../../constants";
+import { FieldError } from "../../gql-types/Object/FieldError";
 import {
   registerVariables,
   expectedData,
   badRegisterVariables,
   getShortMessage
-} from "./utils";
+} from "../utils";
 
 export const registerModule = () => {
   test("refresh access token before", async () => {
@@ -21,10 +21,7 @@ export const registerModule = () => {
   });
 
   test("normal register", async () => {
-    const {
-      data: { register },
-      headers
-    } = await client.rawRegister(registerVariables);
+    const { data, headers } = await client.rawRegister(registerVariables);
 
     const cookie = headers.get("set-cookie");
 
@@ -32,10 +29,12 @@ export const registerModule = () => {
 
     client.setCookie(cookie);
 
+    const { register } = data!;
+
     expect(register.ok).toBe(true);
     expect(register.errors).toBeNull();
     expect(register.user).toEqual(expect.objectContaining(expectedData));
-    expect(register.user.password).toBeUndefined();
+    expect(register.user!.password).toBeUndefined();
     expect(register.accessToken).not.toBeNull();
   });
 
