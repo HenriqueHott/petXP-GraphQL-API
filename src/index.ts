@@ -9,13 +9,16 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 (async () => {
-  await createTypeormConn();
-
-  const server = new ApolloServer({
-    schema: await buildSchema({
+  const [schema] = await Promise.all([
+    buildSchema({
       resolvers: [`${__dirname}/resolvers/*Resolver.[tj]s`],
       validate: false
     }),
+    createTypeormConn()
+  ]);
+
+  const server = new ApolloServer({
+    schema,
     context: ({ req, res }) => ({ req, res })
   });
 
