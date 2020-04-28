@@ -1,5 +1,5 @@
 import { GraphQLClient } from "graphql-request";
-import fetch from "node-fetch";
+import fetch, { Response } from "node-fetch";
 import { RegisterUserArgs } from "../gql-types/Args/User/RegisterUserArgs";
 import { print } from "graphql";
 import { registerMutation } from "./documents/mutations/registerMutation";
@@ -12,9 +12,15 @@ import { RegisterLoginResponse } from "../gql-types/Object/User/RegisterLoginRes
 import { UserResponse } from "../gql-types/Object/User/UserResponse";
 
 type Token = string | null | undefined;
+
+interface RefreshAccessTokenResponse extends Response {
+  json(): Promise<{ accessToken: string | null }>;
+}
+
 type ClientUserResponse<T extends "me" | "updateMe"> = {
   [K in T]: Required<UserResponse>;
 };
+
 type ClientRegisterLoginResponse<T extends "login" | "register"> = {
   [K in T]: Required<RegisterLoginResponse>;
 };
@@ -39,7 +45,7 @@ export class TestClient {
     this.cookie = cookie;
   }
 
-  refreshAccessToken() {
+  refreshAccessToken(): Promise<RefreshAccessTokenResponse> {
     return fetch(`${this.host}/refresh-access-token`, {
       method: "POST",
       headers: this.cookie ? { cookie: this.cookie } : undefined
