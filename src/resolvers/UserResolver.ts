@@ -15,11 +15,11 @@ import { invalidLogin, unexpectedError, emailRegistered } from "../constants";
 import { UserArgs } from "../gql-types/Args/User/UserArgs";
 import { sendRefreshToken, createAccessToken } from "../utils/tokens";
 import { verify } from "argon2";
-import { RegisterLoginResponse } from "../gql-types/Response/User/RegisterLoginResponse";
+import { RegisterLoginResponse } from "../gql-types/Object/User/RegisterLoginResponse";
 import { validate } from "class-validator";
 import { FieldError } from "../gql-types/Object/FieldError";
 import { formatErrors } from "../utils/formatErrors";
-import { UserResponse } from "../gql-types/Response/User/UserResponse";
+import { UserResponse } from "../gql-types/Object/User/UserResponse";
 import { errorResponse } from "../utils/errorResponse";
 import {
   IResolverResponse,

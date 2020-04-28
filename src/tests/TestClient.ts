@@ -8,8 +8,8 @@ import { loginMutation } from "./documents/mutations/loginMutation";
 import { meQuery } from "./documents/queries/meQuery";
 import { UserArgs } from "../gql-types/Args/User/UserArgs";
 import { updateMeMutation } from "./documents/mutations/updateMeMutation";
-import { RegisterLoginResponse } from "../gql-types/Response/User/RegisterLoginResponse";
-import { UserResponse } from "../gql-types/Response/User/UserResponse";
+import { RegisterLoginResponse } from "../gql-types/Object/User/RegisterLoginResponse";
+import { UserResponse } from "../gql-types/Object/User/UserResponse";
 
 type Token = string | null | undefined;
 type ClientUserResponse<T extends "me" | "updateMe"> = {
