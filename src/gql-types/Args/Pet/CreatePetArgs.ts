@@ -9,21 +9,23 @@ import {
 } from "class-validator";
 import { validationStringLength } from "../../../constants";
 
+const { min, max } = validationStringLength;
+
 @ArgsType()
 export class CreatePetArgs {
   @Field()
   @IsString()
-  @Length(validationStringLength.min, validationStringLength.max)
+  @Length(min, max)
   name: string;
 
   @Field()
   @IsString()
-  @Length(validationStringLength.min, validationStringLength.max)
+  @Length(min, max)
   type: string;
 
   @Field()
   @IsString()
-  @Length(validationStringLength.min, validationStringLength.max)
+  @Length(min, max)
   breed: string;
 
   @Field(() => Int)
