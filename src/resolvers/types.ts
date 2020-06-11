@@ -1,5 +1,6 @@
 import { FieldError } from "../gql-types/Object/FieldError";
 import { User } from "../entities/User";
+import { AccessToken } from "../types";
 
 export interface IErrorResponse {
   ok: false;
@@ -17,5 +18,5 @@ export interface IUserResponse extends IGoodResponse {
 }
 
 export interface IRegisterLoginResponse extends IUserResponse {
-  accessToken: string;
+  accessToken: NonNullable<AccessToken>;
 }

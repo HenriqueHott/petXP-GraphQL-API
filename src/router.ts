@@ -1,27 +1,31 @@
 import { Router } from "express";
 import { verify } from "jsonwebtoken";
-import { Payload } from "./types";
+import { AccessToken, TokenPayload } from "./types";
 import { User } from "./entities/User";
-import { wrongTokenVersion } from "./constants";
+import {
+  cookiePath,
+  noCookieToken,
+  userNotFound,
+  wrongTokenVersion
+} from "./constants";
 import { sendRefreshToken, createAccessToken } from "./utils/tokens";
 
 const router = Router();
 
-router.post("/refresh-access-token", async (req, res) => {
-  let accessToken: string | null = null;
+router.post(cookiePath, async (req, res) => {
+  let accessToken: AccessToken = null;
 
   try {
     const token: string | undefined = req.cookies[process.env.COOKIE_NAME!];
-    if (!token) throw new Error("No refresh token");
+    if (!token) throw new Error(noCookieToken);
 
     const { id, tokenVersion } = verify(
       token,
       process.env.JWT_REFRESH_TOKEN_SECRET!
-    ) as Payload;
+    ) as TokenPayload;
 
     const user = await User.findOne({ where: { id } });
-    if (!user) throw new Error("Could not find user");
-
+    if (!user) throw new Error(userNotFound);
     if (tokenVersion !== user.tokenVersion) {
       throw new Error(wrongTokenVersion);
     }

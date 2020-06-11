@@ -1,31 +1,36 @@
 import { MiddlewareFn, NextFn } from "type-graphql";
-import { verify } from "jsonwebtoken";
-import { Context, Payload } from "../types";
-import { User } from "../entities/User";
-import { notAuthenticated, wrongTokenVersion } from "../constants";
+import { Context, TokenPayload } from "../types";
 import { IErrorResponse } from "../resolvers/types";
+import { verify } from "jsonwebtoken";
+import { User } from "../entities/User";
+import {
+  noAuthorizationToken,
+  userNotFound,
+  wrongTokenVersion,
+  notAuthenticated
+} from "../constants";
 
 export const ValidateUser: MiddlewareFn<Context> = async (
   { context },
   next
 ): Promise<NextFn | IErrorResponse> => {
   const { authorization } = context.req.headers;
-  if (!authorization) throw new Error(notAuthenticated);
+  if (!authorization) throw new Error(noAuthorizationToken);
 
   try {
     const token = authorization.split(" ")[1];
-    const payload = verify(
+    const { id, tokenVersion } = verify(
       token,
       process.env.JWT_ACCESS_TOKEN_SECRET!
-    ) as Payload;
+    ) as TokenPayload;
 
     const user = await User.findOne({
-      where: { id: payload.id },
+      where: { id },
       relations: ["pets", "requests"]
     });
-    if (!user) throw new Error("Could not find user");
 
-    if (payload.tokenVersion !== user.tokenVersion) {
+    if (!user) throw new Error(userNotFound);
+    if (tokenVersion !== user.tokenVersion) {
       throw new Error(wrongTokenVersion);
     }
 

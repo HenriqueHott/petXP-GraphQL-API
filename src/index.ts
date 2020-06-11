@@ -40,7 +40,7 @@ import cookieParser from "cookie-parser";
 
   app.listen(4000, () => {
     console.log(
-      `Server running on ${process.env.NODE_ENV} mode at ${process.env.BACKEND_HOST}${server.graphqlPath}`
+      `Server running in ${process.env.NODE_ENV} mode at ${process.env.BACKEND_HOST}${server.graphqlPath}`
     );
   });
 })();

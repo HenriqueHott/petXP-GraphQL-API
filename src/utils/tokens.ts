@@ -1,25 +1,29 @@
 import { User } from "../entities/User";
 import { sign } from "jsonwebtoken";
 import { Response } from "express";
+import { AccessToken } from "../types";
+import { cookiePath } from "../constants";
 
-export const createAccessToken = ({ id, tokenVersion }: User) =>
+type TokenFn = (user: User) => NonNullable<AccessToken>;
+
+export const createAccessToken: TokenFn = ({ id, tokenVersion }) =>
   sign({ id, tokenVersion }, process.env.JWT_ACCESS_TOKEN_SECRET!, {
     expiresIn: "15m"
   });
 
-const expirationSecs = 60 * 60 * 24 * 7; // 7 days
+const cookieExpirationInSeconds = 60 * 60 * 24 * 7; // 7 days
 
-export const createRefreshToken = ({ id, tokenVersion }: User) =>
+export const createRefreshToken: TokenFn = ({ id, tokenVersion }) =>
   sign({ id, tokenVersion }, process.env.JWT_REFRESH_TOKEN_SECRET!, {
-    expiresIn: expirationSecs
+    expiresIn: cookieExpirationInSeconds
   });
 
-export const sendRefreshToken = (res: Response, user: User) => {
+export const sendRefreshToken = (res: Response, user: User): void => {
   res.cookie(process.env.COOKIE_NAME!, createRefreshToken(user), {
     // domain: ".example.com",
-    maxAge: expirationSecs * 1000,
     httpOnly: true,
-    path: "/refresh-access-token",
+    maxAge: cookieExpirationInSeconds * 1000,
+    path: cookiePath,
     secure: process.env.NODE_ENV === "production"
   });
 };

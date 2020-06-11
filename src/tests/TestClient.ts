@@ -1,5 +1,8 @@
-import { GraphQLClient } from "graphql-request";
 import fetch, { Response } from "node-fetch";
+import { AccessToken } from "../types";
+import { UserResponse } from "../gql-types/Object/User/UserResponse";
+import { RegisterLoginResponse } from "../gql-types/Object/User/RegisterLoginResponse";
+import { GraphQLClient } from "graphql-request";
 import { RegisterUserArgs } from "../gql-types/Args/User/RegisterUserArgs";
 import { print } from "graphql";
 import { registerMutation } from "./documents/mutations/registerMutation";
@@ -8,13 +11,11 @@ import { loginMutation } from "./documents/mutations/loginMutation";
 import { meQuery } from "./documents/queries/meQuery";
 import { UserArgs } from "../gql-types/Args/User/UserArgs";
 import { updateMeMutation } from "./documents/mutations/updateMeMutation";
-import { RegisterLoginResponse } from "../gql-types/Object/User/RegisterLoginResponse";
-import { UserResponse } from "../gql-types/Object/User/UserResponse";
 
 type Token = string | null | undefined;
 
 interface RefreshAccessTokenResponse extends Response {
-  json(): Promise<{ accessToken: string | null }>;
+  json(): Promise<{ accessToken: AccessToken }>;
 }
 
 type ClientUserResponse<T extends "me" | "updateMe"> = {

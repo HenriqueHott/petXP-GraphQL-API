@@ -1,14 +1,16 @@
 import { ValidationError } from "class-validator";
 import { FieldError } from "../gql-types/Object/FieldError";
 
-export const formatErrors = (validationErrors: ValidationError[]) => {
-  const errors: FieldError[] = [];
+export const formatErrors = (
+  validationErrors: ValidationError[]
+): FieldError[] =>
+  validationErrors.reduce<FieldError[]>(
+    (errors, { constraints, property: path }) => {
+      Object.values(constraints).forEach(message => {
+        errors.push({ path, message });
+      });
 
-  validationErrors.forEach(error => {
-    Object.values(error.constraints).forEach(err => {
-      errors.push({ path: error.property, message: err });
-    });
-  });
-
-  return errors;
-};
+      return errors;
+    },
+    []
+  );
