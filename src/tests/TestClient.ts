@@ -3,6 +3,7 @@ import { AccessToken } from "../types";
 import { UserResponse } from "../gql-types/Object/User/UserResponse";
 import { RegisterLoginResponse } from "../gql-types/Object/User/RegisterLoginResponse";
 import { GraphQLClient } from "graphql-request";
+import { refreshAccessTokenEndpoint } from "../constants";
 import { RegisterUserArgs } from "../gql-types/Args/User/RegisterUserArgs";
 import { print } from "graphql";
 import { registerMutation } from "./documents/mutations/registerMutation";
@@ -12,24 +13,24 @@ import { meQuery } from "./documents/queries/meQuery";
 import { UserArgs } from "../gql-types/Args/User/UserArgs";
 import { updateMeMutation } from "./documents/mutations/updateMeMutation";
 
-type Token = string | null | undefined;
-
 interface RefreshAccessTokenResponse extends Response {
   json(): Promise<{ accessToken: AccessToken }>;
 }
 
-type ClientUserResponse<T extends "me" | "updateMe"> = {
-  [K in T]: Required<UserResponse>;
-};
+type ClientUserResponse<K extends "me" | "updateMe"> = Record<
+  K,
+  Required<UserResponse>
+>;
 
-type ClientRegisterLoginResponse<T extends "login" | "register"> = {
-  [K in T]: Required<RegisterLoginResponse>;
-};
+type ClientRegisterLoginResponse<K extends "login" | "register"> = Record<
+  K,
+  Required<RegisterLoginResponse>
+>;
 
 export class TestClient {
-  private client: GraphQLClient;
-  private cookie: Token;
-  private accessToken: Token;
+  private readonly client: GraphQLClient;
+  private cookie: AccessToken = null;
+  private accessToken: AccessToken = null;
 
   constructor(private host: string) {
     this.client = new GraphQLClient(`${host}/graphql`);
@@ -42,26 +43,26 @@ export class TestClient {
     );
   }
 
-  setCookie(cookie: Token) {
+  setCookie(cookie: AccessToken) {
     this.cookie = cookie;
   }
 
   refreshAccessToken(): Promise<RefreshAccessTokenResponse> {
-    return fetch(`${this.host}/refresh-access-token`, {
+    return fetch(this.host + refreshAccessTokenEndpoint, {
       method: "POST",
       headers: this.cookie ? { cookie: this.cookie } : undefined
     });
   }
 
   async rawRegister(variables: RegisterUserArgs) {
-    const response = await this.client.rawRequest<
+    const res = await this.client.rawRequest<
       ClientRegisterLoginResponse<"register">
     >(print(registerMutation), variables);
 
-    this.accessToken = response.data!.register.accessToken;
+    this.accessToken = res.data!.register.accessToken;
     this.setAuthHeader();
 
-    return response;
+    return res;
   }
 
   register(variables: RegisterUserArgs) {
@@ -72,14 +73,14 @@ export class TestClient {
   }
 
   async rawLogin(variables: LoginArgs) {
-    const response = await this.client.rawRequest<
+    const res = await this.client.rawRequest<
       ClientRegisterLoginResponse<"login">
     >(print(loginMutation), variables);
 
-    this.accessToken = response.data!.login.accessToken;
+    this.accessToken = res.data!.login.accessToken;
     this.setAuthHeader();
 
-    return response;
+    return res;
   }
 
   login(variables: LoginArgs) {

@@ -3,7 +3,7 @@ import { verify } from "jsonwebtoken";
 import { AccessToken, TokenPayload } from "./types";
 import { User } from "./entities/User";
 import {
-  cookiePath,
+  refreshAccessTokenEndpoint,
   noCookieToken,
   userNotFound,
   wrongTokenVersion
@@ -12,7 +12,7 @@ import { sendRefreshToken, createAccessToken } from "./utils/tokens";
 
 const router = Router();
 
-router.post(cookiePath, async (req, res) => {
+router.post(refreshAccessTokenEndpoint, async (req, res) => {
   let accessToken: AccessToken = null;
 
   try {

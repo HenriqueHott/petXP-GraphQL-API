@@ -2,7 +2,7 @@ import { User } from "../entities/User";
 import { sign } from "jsonwebtoken";
 import { Response } from "express";
 import { AccessToken } from "../types";
-import { cookiePath } from "../constants";
+import { refreshAccessTokenEndpoint } from "../constants";
 
 type TokenFn = (user: User) => NonNullable<AccessToken>;
 
@@ -23,7 +23,7 @@ export const sendRefreshToken = (res: Response, user: User): void => {
     // domain: ".example.com",
     httpOnly: true,
     maxAge: cookieExpirationInSeconds * 1000,
-    path: cookiePath,
+    path: refreshAccessTokenEndpoint,
     secure: process.env.NODE_ENV === "production"
   });
 };
