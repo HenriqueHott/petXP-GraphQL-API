@@ -16,12 +16,12 @@ router.post(refreshAccessTokenEndpoint, async (req, res) => {
   let accessToken: AccessToken = null;
 
   try {
-    const token: string | undefined = req.cookies[process.env.COOKIE_NAME!];
+    const token: string | undefined = req.cookies[process.env.COOKIE_NAME];
     if (!token) throw new Error(noCookieToken);
 
     const { id, tokenVersion } = verify(
       token,
-      process.env.JWT_REFRESH_TOKEN_SECRET!
+      process.env.JWT_REFRESH_TOKEN_SECRET
     ) as TokenPayload;
 
     const user = await User.findOne({ where: { id } });

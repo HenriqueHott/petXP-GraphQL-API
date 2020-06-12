@@ -21,7 +21,7 @@ export const ValidateUser: MiddlewareFn<Context> = async (
     const token = authorization.split(" ")[1];
     const { id, tokenVersion } = verify(
       token,
-      process.env.JWT_ACCESS_TOKEN_SECRET!
+      process.env.JWT_ACCESS_TOKEN_SECRET
     ) as TokenPayload;
 
     const user = await User.findOne({
